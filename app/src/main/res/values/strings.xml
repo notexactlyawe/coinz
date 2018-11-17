@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Coinz</string>
+    <string name="db_name">coinz_db</string>
 </resources>
