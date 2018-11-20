@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">Coinz</string>
+    <string name="db_name">coinz_db</string>
+    <string name="title_activity_main">Coinz</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <string name="blind_mode">Coinz Listing</string>
+    <string name="upgrade_screen">Upgrades/Traps</string>
+    <string name="map_screen">Map</string>
+    <string name="shop_screen">Shop</string>
+    <string name="banking_screen">Bank</string>
+    <string name="friends_screen">Send Coinz</string>
+    <string name="leaderboard_screen">Leaderboard</string>
 </resources>
