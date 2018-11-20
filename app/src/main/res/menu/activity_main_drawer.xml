@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_main"
+            android:icon="@drawable/ic_coinz_24dp"
+            android:title="@string/blind_mode" />
+        <item
+            android:id="@+id/nav_shop"
+            android:icon="@drawable/ic_store_black_24dp"
+            android:title="@string/shop_screen" />
+        <item
+            android:id="@+id/nav_bank"
+            android:icon="@drawable/ic_bank_black_24dp"
+            android:title="@string/banking_screen" />
+        <item
+            android:id="@+id/nav_friends"
+            android:icon="@drawable/ic_people_black_24dp"
+            android:title="@string/friends_screen" />
+        <item
+            android:id="@+id/nav_upgrade"
+            android:icon="@drawable/ic_upgrade_black_24dp"
+            android:title="@string/upgrade_screen" />
+        <item
+            android:id="@+id/nav_leaderboard"
+            android:icon="@drawable/ic_leaderboard_black_24dp"
+            android:title="@string/leaderboard_screen" />
+        <item
+            android:id="@+id/nav_map"
+            android:icon="@drawable/ic_map_black_24dp"
+            android:title="@string/map_screen" />
+    </group>
+</menu>
