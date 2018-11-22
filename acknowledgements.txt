@@ -1,0 +1,4 @@
+https://firebase.google.com/docs/auth/android/firebaseui
+https://material.io/
+https://github.com/request/request
+https://developer.android.com/training/data-storage/shared-preferences

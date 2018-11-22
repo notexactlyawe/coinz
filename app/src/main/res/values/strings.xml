@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Coinz</string>
-    <string name="db_name">coinz_db</string>
     <string name="title_activity_main">Coinz</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -15,4 +14,17 @@
     <string name="banking_screen">Bank</string>
     <string name="friends_screen">Send Coinz</string>
     <string name="leaderboard_screen">Leaderboard</string>
+
+    <string name="shil_conversion">SHIL/GOLD: </string>
+    <string name="dolr_conversion">DOLR/GOLD: </string>
+    <string name="quid_conversion">QUID/GOLD: </string>
+    <string name="peny_conversion">PENY/GOLD: </string>
+
+    <string name="preference_file_key">com.cameronmacleod.coinz.db</string>
+    <string name="coinz_map_key">coinzmap</string>
+
+    <string name="no_geojson_toast">Couldn\'t get map data. Please try again.</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

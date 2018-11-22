@@ -1,14 +1,17 @@
 package com.cameronmacleod.coinz
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
+import java.util.*
 
 class LoginActivity : AppCompatActivity() {
 
@@ -22,7 +25,6 @@ class LoginActivity : AppCompatActivity() {
         val user = FirebaseAuth.getInstance().currentUser
 
         if (user != null) {
-            fetchData()
             redirectToMainScreen()
         }
     }
@@ -36,10 +38,6 @@ class LoginActivity : AppCompatActivity() {
                         .setAvailableProviders(providers)
                         .build(),
                 RC_SIGN_IN)
-    }
-
-    fun fetchData() {
-
     }
 
     fun redirectToMainScreen() {
@@ -56,7 +54,6 @@ class LoginActivity : AppCompatActivity() {
             if (resultCode == Activity.RESULT_OK) {
                 // Successfully signed in
                 val user = FirebaseAuth.getInstance().currentUser
-                fetchData()
                 redirectToMainScreen()
             } else if (response != null) {
                 // if response was null, then user pressed the back button
