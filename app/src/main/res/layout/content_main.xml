@@ -8,4 +8,91 @@
     tools:context=".MainActivity"
     tools:showIn="@layout/app_bar_main">
 
+    <TableLayout
+        android:layout_width="368dp"
+        android:layout_height="495dp"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="8dp">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <TextView
+                android:id="@+id/shil_conversion_label"
+                android:layout_width="92dp"
+                android:layout_height="wrap_content"
+                android:text="@string/shil_conversion"
+                tools:layout_editor_absoluteX="8dp"
+                tools:layout_editor_absoluteY="8dp" />
+
+            <TextView
+                android:id="@+id/shil_conversion_rate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.0" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <TextView
+                android:id="@+id/dolr_conversion_label"
+                android:layout_width="92dp"
+                android:layout_height="wrap_content"
+                android:text="@string/dolr_conversion"
+                tools:layout_editor_absoluteX="8dp"
+                tools:layout_editor_absoluteY="8dp" />
+
+            <TextView
+                android:id="@+id/dolr_conversion_rate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.0" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <TextView
+                android:id="@+id/quid_conversion_label"
+                android:layout_width="92dp"
+                android:layout_height="wrap_content"
+                android:text="@string/quid_conversion"
+                tools:layout_editor_absoluteX="8dp"
+                tools:layout_editor_absoluteY="8dp" />
+
+            <TextView
+                android:id="@+id/quid_conversion_rate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.0" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <TextView
+                android:id="@+id/peny_conversion_label"
+                android:layout_width="92dp"
+                android:layout_height="wrap_content"
+                android:text="@string/peny_conversion"
+                tools:layout_editor_absoluteX="8dp"
+                tools:layout_editor_absoluteY="8dp" />
+
+            <TextView
+                android:id="@+id/peny_conversion_rate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.0" />
+
+        </TableRow>
+
+    </TableLayout>
+
 </android.support.constraint.ConstraintLayout>

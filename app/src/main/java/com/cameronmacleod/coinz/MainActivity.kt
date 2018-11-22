@@ -1,15 +1,21 @@
 package com.cameronmacleod.coinz
 
+import android.content.Context
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import kotlinx.android.synthetic.main.content_main.*
+import org.json.JSONException
+import org.json.JSONObject
+import java.util.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -18,17 +24,46 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-        }
-
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
 
+        // Make sure current screen is selected in navigation drawer
         nav_view.setNavigationItemSelectedListener(this)
+        nav_view.setCheckedItem(R.id.nav_main)
+
+        fetchData()
+    }
+
+    fun fetchData() {
+        val m = MapHelper(this)
+        m.getJSONForDay(Calendar.getInstance().time) { response ->
+            Log.d("FetchData response", response.toString())
+
+            val sharedPref = this.getSharedPreferences(
+                    getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+            with (sharedPref.edit()) {
+                putString(getString(R.string.coinz_map_key), response.toString())
+                apply()
+            }
+
+            try {
+                val rates = response.getJSONObject("rates")
+                fillRates(rates)
+            } catch (e: JSONException) {
+                val toast = Toast.makeText(this, R.string.no_geojson_toast, Toast.LENGTH_LONG)
+                toast.show()
+                Log.e("MainActivity", "Error getting rates from geojson: ${e.localizedMessage}")
+            }
+        }
+    }
+
+    fun fillRates(rates: JSONObject) {
+        shil_conversion_rate.text = rates.getString("SHIL")
+        dolr_conversion_rate.text = rates.getString("DOLR")
+        quid_conversion_rate.text = rates.getString("QUID")
+        peny_conversion_rate.text = rates.getString("PENY")
     }
 
     override fun onBackPressed() {
@@ -58,9 +93,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
-            R.id.nav_main -> {
-
-            }
             R.id.nav_shop -> {
 
             }
