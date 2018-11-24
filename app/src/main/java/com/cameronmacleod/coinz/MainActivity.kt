@@ -1,6 +1,8 @@
 package com.cameronmacleod.coinz
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
@@ -9,20 +11,27 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.ImageView
 import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.android.synthetic.main.nav_header_main.*
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+    private lateinit var netHelper: NetHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+
+        netHelper = NetHelper(this)
 
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
@@ -33,12 +42,34 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         nav_view.setNavigationItemSelectedListener(this)
         nav_view.setCheckedItem(R.id.nav_main)
 
+        FirebaseAuth.getInstance().addAuthStateListener(::firebaseAuthListener)
+
         fetchData()
     }
 
-    fun fetchData() {
-        val m = MapHelper(this)
-        m.getJSONForDay(Calendar.getInstance().time) { response ->
+    private fun firebaseAuthListener(auth: FirebaseAuth) {
+        val user = auth.currentUser
+        if (user == null) {
+            // user signed out
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+        } else {
+            if (user.photoUrl == null) {
+                Log.w("MainActivity", "User had no profile picture")
+            } else {
+                netHelper.getProfilePicture(user.photoUrl.toString(), userProfilePic.scaleType
+                ) { bitmap ->
+                    Log.d(javaClass.simpleName, "Got bitmap from url ${user.photoUrl}")
+                    userProfilePic.setImageBitmap(bitmap)
+                }
+            }
+
+            userEmail.text = user.email
+        }
+    }
+
+    private fun fetchData() {
+        netHelper.getJSONForDay(Calendar.getInstance().time) { response ->
             Log.d("FetchData response", response.toString())
 
             val sharedPref = this.getSharedPreferences(
@@ -59,11 +90,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    fun fillRates(rates: JSONObject) {
+    private fun fillRates(rates: JSONObject) {
         shil_conversion_rate.text = rates.getString("SHIL")
         dolr_conversion_rate.text = rates.getString("DOLR")
         quid_conversion_rate.text = rates.getString("QUID")
         peny_conversion_rate.text = rates.getString("PENY")
+    }
+
+    fun onSignOutButtonClicked(view: View) {
+        with (FirebaseAuth.getInstance()) {
+            removeAuthStateListener(::firebaseAuthListener)
+            signOut()
+        }
     }
 
     override fun onBackPressed() {

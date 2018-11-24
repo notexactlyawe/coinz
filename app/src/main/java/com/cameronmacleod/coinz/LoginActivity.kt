@@ -15,7 +15,7 @@ import java.util.*
 
 class LoginActivity : AppCompatActivity() {
 
-    val RC_SIGN_IN = 42
+    val RC_SIGN_IN = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +25,7 @@ class LoginActivity : AppCompatActivity() {
         val user = FirebaseAuth.getInstance().currentUser
 
         if (user != null) {
+            Log.d("LoginActivity", "User ${user.email} already logged in")
             redirectToMainScreen()
         }
     }
@@ -54,6 +55,7 @@ class LoginActivity : AppCompatActivity() {
             if (resultCode == Activity.RESULT_OK) {
                 // Successfully signed in
                 val user = FirebaseAuth.getInstance().currentUser
+                Log.d("LoginActivity", "Successfully signed in ${user?.email}")
                 redirectToMainScreen()
             } else if (response != null) {
                 // if response was null, then user pressed the back button
