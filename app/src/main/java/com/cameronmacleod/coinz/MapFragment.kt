@@ -5,11 +5,18 @@ import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.mapbox.geojson.FeatureCollection
+import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.annotations.MarkerOptions
+import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
+import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
+import org.json.JSONObject
 
 
 /**
@@ -44,6 +51,26 @@ class MapFragment : Fragment() {
             val nonNullActivity = activity as Activity
             mapView = nonNullActivity.findViewById(R.id.mapView) as MapView
             mapView.onCreate(savedInstanceState)
+
+            val sharedPrefs = nonNullActivity.getSharedPreferences(
+                    getString(R.string.preference_file_key), Context.MODE_PRIVATE)
+
+            mapView.getMapAsync { mapboxMap ->
+                try {
+                    val json = sharedPrefs.getString(getString(R.string.coinz_map_key), "")
+                    val markerOptions = FeatureCollection.fromJson(json).features()?.forEach {
+                        val coords = (it.geometry() as Point).coordinates()
+                        val m = MarkerOptions().apply {
+                            position = LatLng(coords[1], coords[0])
+                            title = it.properties()?.get("currency")?.asString
+                            snippet = it.properties()?.get("marker-symbol")?.asString
+                        }
+                        mapboxMap.addMarker(m)
+                    }
+                } catch (e: Exception) {
+                    Log.e(this.javaClass.simpleName, "Couldn't create GeoJSON source ${e.printStackTrace()}")
+                }
+            }
         }
     }
 
