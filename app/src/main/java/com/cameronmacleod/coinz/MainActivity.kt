@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
@@ -41,31 +42,33 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         nav_view.setNavigationItemSelectedListener(this)
         nav_view.setCheckedItem(R.id.nav_main)
 
-        FirebaseAuth.getInstance().addAuthStateListener { auth ->
-            val user = auth.currentUser
-            if (user == null) {
-                // user signed out
-                val intent = Intent(this, LoginActivity::class.java)
-                startActivity(intent)
-            } else {
-                if (user.photoUrl == null) {
-                    Log.w("MainActivity", "User had no profile picture")
-                } else {
-                    netHelper.getProfilePicture(user.photoUrl.toString(), userProfilePic.scaleType
-                    ) { bitmap ->
-                        Log.d(javaClass.simpleName, "Got bitmap from url ${user.photoUrl}")
-                        userProfilePic.setImageBitmap(bitmap)
-                    }
-                }
-
-                userEmail.text = user.email
-            }
-        }
+        FirebaseAuth.getInstance().addAuthStateListener(::firebaseAuthListener)
 
         fetchData()
     }
 
-    fun fetchData() {
+    private fun firebaseAuthListener(auth: FirebaseAuth) {
+        val user = auth.currentUser
+        if (user == null) {
+            // user signed out
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+        } else {
+            if (user.photoUrl == null) {
+                Log.w("MainActivity", "User had no profile picture")
+            } else {
+                netHelper.getProfilePicture(user.photoUrl.toString(), userProfilePic.scaleType
+                ) { bitmap ->
+                    Log.d(javaClass.simpleName, "Got bitmap from url ${user.photoUrl}")
+                    userProfilePic.setImageBitmap(bitmap)
+                }
+            }
+
+            userEmail.text = user.email
+        }
+    }
+
+    private fun fetchData() {
         netHelper.getJSONForDay(Calendar.getInstance().time) { response ->
             Log.d("FetchData response", response.toString())
 
@@ -87,11 +90,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    fun fillRates(rates: JSONObject) {
+    private fun fillRates(rates: JSONObject) {
         shil_conversion_rate.text = rates.getString("SHIL")
         dolr_conversion_rate.text = rates.getString("DOLR")
         quid_conversion_rate.text = rates.getString("QUID")
         peny_conversion_rate.text = rates.getString("PENY")
+    }
+
+    fun onSignOutButtonClicked(view: View) {
+        with (FirebaseAuth.getInstance()) {
+            removeAuthStateListener(::firebaseAuthListener)
+            signOut()
+        }
     }
 
     override fun onBackPressed() {
