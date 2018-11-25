@@ -2,24 +2,31 @@ package com.cameronmacleod.coinz
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.NavigationView
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
 import kotlinx.android.synthetic.main.toolbar.*
 import java.util.*
+import java.util.jar.Manifest
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, OnFragmentInteractionListener {
     private lateinit var netHelper: NetHelper
+    private val REQUEST_LOCATION = 1;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +52,49 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.flContent, MainFragment())
         fragmentTransaction.commit()
+
+        checkLocationPermission()
+    }
+
+    private fun checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                            android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+                // show explanation of permission
+                val dialog = AlertDialog.Builder(this).apply {
+                    setMessage(R.string.location_explanation)
+                    setTitle("Location Permission")
+                    setNeutralButton("OK") { result, something ->
+                        checkLocationPermission()
+                    }
+                }
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,
+                        arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                        REQUEST_LOCATION)
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<String>, grantResults: IntArray) {
+        when (requestCode) {
+            REQUEST_LOCATION -> {
+                // If request is cancelled, the result arrays are empty.
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    // permission granted
+                } else {
+                    val toast = Toast.makeText(this, "Cannot operate without location", Toast.LENGTH_LONG)
+                    toast.show()
+                }
+                return
+            }
+            else -> {
+                // Ignore all other requests.
+            }
+        }
     }
 
     private fun firebaseAuthListener(auth: FirebaseAuth) {

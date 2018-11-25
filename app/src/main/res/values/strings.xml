@@ -26,6 +26,12 @@
 
     <string name="no_geojson_toast">Couldn\'t get map data. Please try again.</string>
 
+    <string name="location_explanation">
+        To collect coinz you will need to enable location. Coinz are collected by standing near to
+        them, so this app will need to know your location. Please enable location in the following
+        screen.
+    </string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
