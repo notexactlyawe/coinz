@@ -7,7 +7,8 @@
         <item
             android:id="@+id/nav_main"
             android:icon="@drawable/ic_coinz_24dp"
-            android:title="@string/blind_mode" />
+            android:title="@string/blind_mode"
+            android:checked="true"/>
         <item
             android:id="@+id/nav_shop"
             android:icon="@drawable/ic_store_black_24dp"

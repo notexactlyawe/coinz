@@ -12,18 +12,13 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.ImageView
-import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.app_bar_main.*
-import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
-import org.json.JSONException
-import org.json.JSONObject
+import kotlinx.android.synthetic.main.toolbar.*
 import java.util.*
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, OnFragmentInteractionListener {
     private lateinit var netHelper: NetHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,12 +34,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 
         // Make sure current screen is selected in navigation drawer
-        nav_view.setNavigationItemSelectedListener(this)
-        nav_view.setCheckedItem(R.id.nav_main)
+        nvView.setNavigationItemSelectedListener(this)
+        nvView.setCheckedItem(R.id.nav_main)
 
         FirebaseAuth.getInstance().addAuthStateListener(::firebaseAuthListener)
 
         fetchData()
+
+        // Set first fragment to the blind mode screen
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.flContent, MainFragment())
+        fragmentTransaction.commit()
     }
 
     private fun firebaseAuthListener(auth: FirebaseAuth) {
@@ -78,23 +78,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 putString(getString(R.string.coinz_map_key), response.toString())
                 apply()
             }
-
-            try {
-                val rates = response.getJSONObject("rates")
-                fillRates(rates)
-            } catch (e: JSONException) {
-                val toast = Toast.makeText(this, R.string.no_geojson_toast, Toast.LENGTH_LONG)
-                toast.show()
-                Log.e("MainActivity", "Error getting rates from geojson: ${e.localizedMessage}")
-            }
         }
     }
 
-    private fun fillRates(rates: JSONObject) {
-        shil_conversion_rate.text = rates.getString("SHIL")
-        dolr_conversion_rate.text = rates.getString("DOLR")
-        quid_conversion_rate.text = rates.getString("QUID")
-        peny_conversion_rate.text = rates.getString("PENY")
+    override fun onFragmentInteraction(uri: Uri) {
+        Log.d(this.javaClass.simpleName,"Fragment interaction with Uri: $uri")
     }
 
     fun onSignOutButtonClicked(view: View) {
@@ -130,7 +118,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
+        val fragmentManager = supportFragmentManager
+        val fragmentTransaction = fragmentManager.beginTransaction()
+
         when (item.itemId) {
+            R.id.nav_main -> {
+                val fragment = MainFragment()
+                fragmentTransaction.replace(R.id.flContent, fragment)
+            }
             R.id.nav_shop -> {
 
             }
@@ -147,9 +142,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             }
             R.id.nav_map -> {
-
+                val fragment = MapFragment()
+                fragmentTransaction.replace(R.id.flContent, fragment)
             }
         }
+
+        fragmentTransaction.commit()
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
