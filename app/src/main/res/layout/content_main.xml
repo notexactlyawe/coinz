@@ -118,14 +118,15 @@
 
             <ImageView
                 android:id="@+id/imgCoinIcon1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_coinz_24dp" />
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:srcCompat="@drawable/ic_quid" />
 
             <TextView
                 android:id="@+id/coinType1"
                 android:layout_width="53dp"
                 android:layout_height="match_parent"
+                android:gravity="end|center_vertical"
                 android:text="QUID"
                 android:textAlignment="center" />
 
@@ -133,18 +134,22 @@
                 android:id="@+id/coinValue1"
                 android:layout_width="49dp"
                 android:layout_height="match_parent"
-                android:text="5" />
+                android:gravity="end|center_vertical"
+                android:text="5"
+                android:textAlignment="viewStart" />
 
             <TextView
                 android:id="@+id/coinDistance1"
                 android:layout_width="84dp"
                 android:layout_height="match_parent"
+                android:gravity="end|center_vertical"
                 android:text="100 Metres" />
 
             <TextView
                 android:id="@+id/coinDirection1"
                 android:layout_width="44dp"
                 android:layout_height="match_parent"
+                android:gravity="end|center_vertical"
                 android:text="East" />
         </TableRow>
 
@@ -154,14 +159,15 @@
 
             <ImageView
                 android:id="@+id/imgCoinIcon2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_coinz_24dp" />
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:srcCompat="@drawable/ic_quid" />
 
             <TextView
                 android:id="@+id/coinType2"
                 android:layout_width="53dp"
                 android:layout_height="match_parent"
+                android:gravity="end|center_vertical"
                 android:text="QUID"
                 android:textAlignment="center" />
 
@@ -169,18 +175,22 @@
                 android:id="@+id/coinValue2"
                 android:layout_width="49dp"
                 android:layout_height="match_parent"
-                android:text="5" />
+                android:gravity="end|center_vertical"
+                android:text="5"
+                android:textAlignment="viewStart" />
 
             <TextView
                 android:id="@+id/coinDistance2"
                 android:layout_width="84dp"
                 android:layout_height="match_parent"
+                android:gravity="end|center_vertical"
                 android:text="100 Metres" />
 
             <TextView
                 android:id="@+id/coinDirection2"
                 android:layout_width="44dp"
                 android:layout_height="match_parent"
+                android:gravity="end|center_vertical"
                 android:text="East" />
         </TableRow>
 
@@ -190,14 +200,15 @@
 
             <ImageView
                 android:id="@+id/imgCoinIcon3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_coinz_24dp" />
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:srcCompat="@drawable/ic_quid" />
 
             <TextView
                 android:id="@+id/coinType3"
                 android:layout_width="53dp"
                 android:layout_height="match_parent"
+                android:gravity="end|center_vertical"
                 android:text="QUID"
                 android:textAlignment="center" />
 
@@ -205,18 +216,22 @@
                 android:id="@+id/coinValue3"
                 android:layout_width="49dp"
                 android:layout_height="match_parent"
-                android:text="5" />
+                android:gravity="end|center_vertical"
+                android:text="5"
+                android:textAlignment="viewStart" />
 
             <TextView
                 android:id="@+id/coinDistance3"
                 android:layout_width="84dp"
                 android:layout_height="match_parent"
+                android:gravity="end|center_vertical"
                 android:text="100 Metres" />
 
             <TextView
                 android:id="@+id/coinDirection3"
                 android:layout_width="44dp"
                 android:layout_height="match_parent"
+                android:gravity="end|center_vertical"
                 android:text="East" />
         </TableRow>
 
@@ -226,14 +241,16 @@
 
             <ImageView
                 android:id="@+id/imgCoinIcon4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_coinz_24dp" />
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+
+                app:srcCompat="@drawable/ic_quid" />
 
             <TextView
                 android:id="@+id/coinType4"
                 android:layout_width="53dp"
                 android:layout_height="match_parent"
+                android:gravity="end|center_vertical"
                 android:text="QUID"
                 android:textAlignment="center" />
 
@@ -241,18 +258,22 @@
                 android:id="@+id/coinValue4"
                 android:layout_width="49dp"
                 android:layout_height="match_parent"
-                android:text="5" />
+                android:gravity="end|center_vertical"
+                android:text="5"
+                android:textAlignment="viewStart" />
 
             <TextView
                 android:id="@+id/coinDistance4"
                 android:layout_width="84dp"
                 android:layout_height="match_parent"
+                android:gravity="end|center_vertical"
                 android:text="100 Metres" />
 
             <TextView
                 android:id="@+id/coinDirection4"
                 android:layout_width="44dp"
                 android:layout_height="match_parent"
+                android:gravity="end|center_vertical"
                 android:text="East" />
         </TableRow>
 

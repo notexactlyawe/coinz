@@ -29,6 +29,11 @@ import org.json.JSONObject
 class MainFragment : Fragment() {
     private var listener: OnFragmentInteractionListener? = null
     private var currLocation: Location? = null
+    private val stringIconMap = hashMapOf(
+            "DOLR" to R.drawable.ic_dolr,
+            "SHIL" to R.drawable.ic_shil,
+            "PENY" to R.drawable.ic_peny,
+            "QUID" to R.drawable.ic_quid)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -118,12 +123,31 @@ class MainFragment : Fragment() {
         featureCollection.features()?.sortedBy {
             distanceToFeature(it)
         }.apply {
-            // TODO: set icons
             // set currencies
-            coinType1.text = this?.get(0)?.properties()?.get("currency")?.asString
-            coinType2.text = this?.get(1)?.properties()?.get("currency")?.asString
-            coinType3.text = this?.get(2)?.properties()?.get("currency")?.asString
-            coinType4.text = this?.get(3)?.properties()?.get("currency")?.asString
+            try {
+                this!!.get(0)?.properties()?.get("currency")!!.asString.apply {
+                    coinType1.text = this
+                    imgCoinIcon1.setImageResource(
+                            stringIconMap.getOrDefault(this, R.drawable.ic_coinz_24dp))
+                }
+                get(1)?.properties()?.get("currency")!!.asString.apply {
+                    coinType2.text = this
+                    imgCoinIcon2.setImageResource(
+                            stringIconMap.getOrDefault(this, R.drawable.ic_coinz_24dp))
+                }
+                get(2)?.properties()?.get("currency")!!.asString.apply {
+                    coinType3.text = this
+                    imgCoinIcon3.setImageResource(
+                            stringIconMap.getOrDefault(this, R.drawable.ic_coinz_24dp))
+                }
+                get(3)?.properties()?.get("currency")!!.asString.apply {
+                    coinType4.text = this
+                    imgCoinIcon4.setImageResource(
+                            stringIconMap.getOrDefault(this, R.drawable.ic_coinz_24dp))
+                }
+            } catch (npe: NullPointerException) {
+                Log.e("Setting currencies", "Something was null $npe")
+            }
 
             // set values
             coinValue1.text = this?.get(0)?.properties()?.get("marker-symbol")?.asString

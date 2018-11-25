@@ -4,3 +4,9 @@ https://github.com/request/request
 https://developer.android.com/training/data-storage/shared-preferences
 https://guides.codepath.com/android/fragment-navigation-drawer
 https://developer.android.com/guide/components/fragments
+https://www.mapbox.com/install/android/add/
+https://www.mapbox.com/android-docs/maps/overview/
+https://stackoverflow.com/questions/14108400/how-to-align-text-vertically-center-in-android
+http://a-student.github.io/SvgToVectorDrawableConverter.Web/
+https://www.photopea.com/
+https://developer.android.com/reference/android/location/Location
