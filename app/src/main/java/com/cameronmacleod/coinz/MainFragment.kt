@@ -19,15 +19,7 @@ import kotlinx.android.synthetic.main.content_main.*
 import org.json.JSONException
 import org.json.JSONObject
 
-/**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [OnFragmentInteractionListener] interface
- * to handle interaction events.
- *
- */
 class MainFragment : Fragment() {
-    private var listener: OnFragmentInteractionListener? = null
     private var currLocation: Location? = null
     private val stringIconMap = hashMapOf(
             "DOLR" to R.drawable.ic_dolr,
@@ -175,24 +167,5 @@ class MainFragment : Fragment() {
             latitude = (feature.geometry() as Point).latitude()
             longitude = (feature.geometry() as Point).longitude()
         })
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        listener?.onFragmentInteraction(uri)
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
-            listener = context
-        } else {
-            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
-        }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
     }
 }

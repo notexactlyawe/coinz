@@ -18,16 +18,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.support.v4.content.ContextCompat
 
-
-/**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [OnFragmentInteractionListener] interface
- * to handle interaction events.
- *
- */
 class MapFragment : Fragment() {
-    private var listener: OnFragmentInteractionListener? = null
     private lateinit var mapView: MapView
     private lateinit var dolrBitmap: Bitmap
     private lateinit var shilBitmap: Bitmap
@@ -112,20 +103,6 @@ class MapFragment : Fragment() {
         drawable.draw(canvas)
 
         return bitmap
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
-            listener = context
-        } else {
-            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
-        }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
     }
 
     override fun onStart() {

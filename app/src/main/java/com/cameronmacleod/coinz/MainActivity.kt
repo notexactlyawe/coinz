@@ -3,7 +3,6 @@ package com.cameronmacleod.coinz
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.app.ActivityCompat
@@ -24,7 +23,7 @@ import kotlinx.android.synthetic.main.nav_header_main.*
 import kotlinx.android.synthetic.main.toolbar.*
 import java.util.*
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, OnFragmentInteractionListener {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private lateinit var netHelper: NetHelper
     // public so fragments can use
     lateinit var coins: Coins
@@ -181,10 +180,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     coins = userCoinz
                     createCoinsObject(userCoinz)
                 }
-    }
-
-    override fun onFragmentInteraction(uri: Uri) {
-        Log.d(this.javaClass.simpleName,"Fragment interaction with Uri: $uri")
     }
 
     fun onSignOutButtonClicked(view: View) {
