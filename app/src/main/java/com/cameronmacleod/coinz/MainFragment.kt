@@ -68,6 +68,7 @@ class MainFragment : Fragment() {
             // user hasn't enabled location
             Log.e(this.javaClass.simpleName, "User hasn't enabled location: $e")
             val toast = Toast.makeText(activity, "Please enable location", Toast.LENGTH_LONG)
+            toast.show()
         }
     }
 

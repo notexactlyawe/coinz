@@ -18,15 +18,20 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
 import kotlinx.android.synthetic.main.toolbar.*
 import java.util.*
 import java.util.jar.Manifest
+import kotlin.collections.HashMap
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, OnFragmentInteractionListener {
     private lateinit var netHelper: NetHelper
-    private val REQUEST_LOCATION = 1;
+    private lateinit var coins: Coins
+    private val REQUEST_LOCATION = 1
+    private var shownLocationExplanationDialog = false
+    private var userID: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +65,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                            android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+                            android.Manifest.permission.ACCESS_FINE_LOCATION) && !shownLocationExplanationDialog) {
                 // show explanation of permission
                 val dialog = AlertDialog.Builder(this).apply {
                     setMessage(R.string.location_explanation)
@@ -69,6 +74,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         checkLocationPermission()
                     }
                 }
+                shownLocationExplanationDialog = true
+                dialog.show()
             } else {
                 // No explanation needed, we can request the permission.
                 ActivityCompat.requestPermissions(this,
@@ -104,6 +111,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
         } else {
+            userID = user.uid
             if (user.photoUrl == null) {
                 Log.w("MainActivity", "User had no profile picture")
             } else {
@@ -128,7 +136,52 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 putString(getString(R.string.coinz_map_key), response.toString())
                 apply()
             }
+
+            if (userID == null) {
+                Log.e(javaClass.simpleName, "User ID was null, can't access user data")
+            } else {
+                retrieveOrCreateCoinsObject(response.toString())
+            }
         }
+    }
+
+    private fun createCoinsObject(coinsObj: Coins) {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("usersToCoinz")
+                .document(coinsObj.name).set(coinsObj)
+                .addOnSuccessListener { reference ->
+                    Log.d("FireStore",
+                            "Document snapshot added with ID ${coinsObj.name}")
+                }
+                .addOnFailureListener { e ->
+                    Log.e("FireStore", "error adding document $e")
+                }
+    }
+
+    private fun retrieveOrCreateCoinsObject(json: String) {
+        // smart casts don't work when compiler can't guarantee that the variable can't
+        // change between the check and the usage
+        val db = FirebaseFirestore.getInstance()
+
+        val userCoinz = Coins.fromJson(json, userID!!, Calendar.getInstance().time)
+
+        db.collection("usersToCoinz").document(userCoinz.name).get()
+                .addOnCompleteListener { task ->
+                    if (!task.isSuccessful || !task.result!!.exists()) {
+                        coins = userCoinz
+                        createCoinsObject(userCoinz)
+                    } else {
+                        Log.d("FireStore", "result: ${task.result}")
+                        coins = task.result?.toObject(Coins::class.java)!!
+                        Log.d(javaClass.simpleName, coins.toString())
+                        Log.d(javaClass.simpleName, coins.coins.get(0).toString())
+                    }
+                }
+                .addOnFailureListener {
+                    Log.d("FireStore", "Couldn't get ${userCoinz.name} from db\n$it")
+                    coins = userCoinz
+                    createCoinsObject(userCoinz)
+                }
     }
 
     override fun onFragmentInteraction(uri: Uri) {
