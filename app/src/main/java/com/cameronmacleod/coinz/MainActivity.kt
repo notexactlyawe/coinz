@@ -23,12 +23,11 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
 import kotlinx.android.synthetic.main.toolbar.*
 import java.util.*
-import java.util.jar.Manifest
-import kotlin.collections.HashMap
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, OnFragmentInteractionListener {
     private lateinit var netHelper: NetHelper
-    private lateinit var coins: Coins
+    // public so fragments can use
+    lateinit var coins: Coins
     private val REQUEST_LOCATION = 1
     private var shownLocationExplanationDialog = false
     private var userID: String? = null

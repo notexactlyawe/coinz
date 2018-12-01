@@ -49,7 +49,7 @@ data class Coins(var coins: List<Coin> = listOf(),
             val dateString = SimpleDateFormat("yyyy.MM.dd").format(date)
             val features = FeatureCollection.fromJson(json).features()
             if (features == null) {
-                Log.e(this.javaClass.simpleName, "No features in GeoJSON when creating list of coinz")
+                Log.e(this::class.java.simpleName, "No features in GeoJSON when creating list of coinz")
                 return Coins(listOf(), userId, dateString)
             }
             val coins = features.map {

@@ -2,21 +2,21 @@ package com.cameronmacleod.coinz
 
 import android.app.Activity
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.mapbox.geojson.FeatureCollection
-import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.annotations.Icon
+import com.mapbox.mapboxsdk.annotations.IconFactory
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
-import org.json.JSONObject
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.support.v4.content.ContextCompat
 
 
 /**
@@ -29,12 +29,24 @@ import org.json.JSONObject
 class MapFragment : Fragment() {
     private var listener: OnFragmentInteractionListener? = null
     private lateinit var mapView: MapView
+    private lateinit var dolrBitmap: Bitmap
+    private lateinit var shilBitmap: Bitmap
+    private lateinit var quidBitmap: Bitmap
+    private lateinit var penyBitmap: Bitmap
+    private lateinit var collBitmap: Bitmap
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (activity != null) {
             val nonNullActivity = activity as Activity
             Mapbox.getInstance(nonNullActivity.applicationContext, "pk.eyJ1Ijoibm90ZXhhY3RseWF3ZSIsImEiOiJjam92enp0b2sxbjdqM3JucmJxbGcxbzI1In0.zNr5YfYwwBzpkp_ReEw2-w");
+
+            // create bitmaps early so that they're only created once
+            dolrBitmap = getBitmapFromVectorDrawable(nonNullActivity, R.drawable.ic_dolr)
+            shilBitmap = getBitmapFromVectorDrawable(nonNullActivity, R.drawable.ic_shil)
+            quidBitmap = getBitmapFromVectorDrawable(nonNullActivity, R.drawable.ic_quid)
+            penyBitmap = getBitmapFromVectorDrawable(nonNullActivity, R.drawable.ic_peny)
+            collBitmap = getBitmapFromVectorDrawable(nonNullActivity, R.drawable.ic_coinz_24dp)
         }
     }
 
@@ -52,18 +64,15 @@ class MapFragment : Fragment() {
             mapView = nonNullActivity.findViewById(R.id.mapView) as MapView
             mapView.onCreate(savedInstanceState)
 
-            val sharedPrefs = nonNullActivity.getSharedPreferences(
-                    getString(R.string.preference_file_key), Context.MODE_PRIVATE)
-
             mapView.getMapAsync { mapboxMap ->
                 try {
-                    val json = sharedPrefs.getString(getString(R.string.coinz_map_key), "")
-                    val markerOptions = FeatureCollection.fromJson(json).features()?.forEach {
-                        val coords = (it.geometry() as Point).coordinates()
+                    val parent = activity as MainActivity
+                    parent.coins.coins.forEach { coin ->
                         val m = MarkerOptions().apply {
-                            position = LatLng(coords[1], coords[0])
-                            title = it.properties()?.get("currency")?.asString
-                            snippet = it.properties()?.get("marker-symbol")?.asString
+                            position = LatLng(coin.latitude, coin.longitude)
+                            title = coin.currency
+                            snippet = coin.amount.toInt().toString()
+                            icon = getIcon(coin.collected, coin.currency)
                         }
                         mapboxMap.addMarker(m)
                     }
@@ -74,9 +83,35 @@ class MapFragment : Fragment() {
         }
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        listener?.onFragmentInteraction(uri)
+    fun getIcon(collected: Boolean, currency: String): Icon {
+        val icon = IconFactory.getInstance(activity!!)
+        var bitmap: Bitmap?
+        if (collected) {
+            bitmap = collBitmap
+            return icon.fromBitmap(bitmap)
+        }
+        when (currency) {
+            "SHIL" -> bitmap = shilBitmap
+            "QUID" -> bitmap = quidBitmap
+            "DOLR" -> bitmap = dolrBitmap
+            "PENY" -> bitmap = penyBitmap
+            else -> {
+                bitmap = collBitmap
+            }
+        }
+        return icon.fromBitmap(bitmap)
+    }
+
+    fun getBitmapFromVectorDrawable(context: Context, drawableId: Int): Bitmap {
+        var drawable = ContextCompat.getDrawable(context, drawableId)!!
+
+        val bitmap = Bitmap.createBitmap(100,
+                100, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight())
+        drawable.draw(canvas)
+
+        return bitmap
     }
 
     override fun onAttach(context: Context) {
