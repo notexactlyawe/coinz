@@ -14,9 +14,11 @@ data class Coin(var coinId: String = "",
                 var amount: Double = 0.0,
                 var collected: Boolean = false) {
 
-    private val location = Location("geojson").apply {
-        latitude = latitude
-        longitude = longitude
+    fun getLocation(): Location {
+        val loc = Location("geojson")
+        loc.latitude = latitude
+        loc.longitude = longitude
+        return loc
     }
 
     override fun toString(): String {
@@ -28,7 +30,7 @@ data class Coin(var coinId: String = "",
     }
 
     fun isCollectable(user: Location): Boolean {
-        if (!collected && location.distanceTo(user) < 5) {
+        if (!collected && getLocation().distanceTo(user) < 5) {
             return true
         }
         return false
