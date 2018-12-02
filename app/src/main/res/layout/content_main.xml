@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".MainActivity">
+    tools:context=".MainFragment">
 
     <TableLayout
         android:id="@+id/tableLayout"
@@ -113,6 +113,7 @@
         </TableRow>
 
         <TableRow
+            android:id="@+id/coinRow1"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -154,6 +155,7 @@
         </TableRow>
 
         <TableRow
+            android:id="@+id/coinRow2"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -195,6 +197,7 @@
         </TableRow>
 
         <TableRow
+            android:id="@+id/coinRow3"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -236,6 +239,7 @@
         </TableRow>
 
         <TableRow
+            android:id="@+id/coinRow4"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 

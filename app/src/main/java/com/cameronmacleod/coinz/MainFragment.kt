@@ -1,15 +1,18 @@
 package com.cameronmacleod.coinz
 
 import android.content.Context
+import android.graphics.Color
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TableRow
 import android.widget.Toast
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
@@ -18,13 +21,14 @@ import kotlinx.android.synthetic.main.content_main.*
 import org.json.JSONException
 import org.json.JSONObject
 
-class MainFragment : Fragment() {
+class MainFragment : Fragment(), View.OnClickListener {
     private var currLocation: Location? = null
     private val stringIconMap = hashMapOf(
             "DOLR" to R.drawable.ic_dolr,
             "SHIL" to R.drawable.ic_shil,
             "PENY" to R.drawable.ic_peny,
             "QUID" to R.drawable.ic_quid)
+    private var topFourCoins = arrayOf("", "", "", "")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,7 +70,14 @@ class MainFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.content_main, container, false)
+        val view = inflater.inflate(R.layout.content_main, container, false)
+
+        view.findViewById<TableRow>(R.id.coinRow1).setOnClickListener(this)
+        view.findViewById<TableRow>(R.id.coinRow2).setOnClickListener(this)
+        view.findViewById<TableRow>(R.id.coinRow3).setOnClickListener(this)
+        view.findViewById<TableRow>(R.id.coinRow4).setOnClickListener(this)
+
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -108,6 +119,8 @@ class MainFragment : Fragment() {
         // sort based on distance
         coins.coins.sortedBy {
             distanceToCoin(it)
+        }.filter {
+            !it.collected
         }.apply {
             // set currencies
             try {
@@ -152,6 +165,62 @@ class MainFragment : Fragment() {
             coinDirection2.text = getDirectionToCoin(this[1])
             coinDirection3.text = getDirectionToCoin(this[2])
             coinDirection4.text = getDirectionToCoin(this[3])
+
+            // set collectable
+            if (this[0].isCollectable(currLocation!!))
+                coinRow1.setBackgroundColor(ContextCompat.getColor(activity!!, R.color.colorPrimary))
+            else
+                coinRow1.setBackgroundColor(Color.TRANSPARENT)
+            if (this[1].isCollectable(currLocation!!))
+                coinRow2.setBackgroundColor(ContextCompat.getColor(activity!!, R.color.colorPrimary))
+            else
+                coinRow2.setBackgroundColor(Color.TRANSPARENT)
+            if (this[2].isCollectable(currLocation!!))
+                coinRow3.setBackgroundColor(ContextCompat.getColor(activity!!, R.color.colorPrimary))
+            else
+                coinRow3.setBackgroundColor(Color.TRANSPARENT)
+            if (this[3].isCollectable(currLocation!!))
+                coinRow4.setBackgroundColor(ContextCompat.getColor(activity!!, R.color.colorPrimary))
+            else
+                coinRow4.setBackgroundColor(Color.TRANSPARENT)
+
+            // keep reference to coins
+            topFourCoins = arrayOf(this[0].coinId, this[1].coinId, this[2].coinId, this[3].coinId)
+        }
+    }
+
+    override fun onClick(view: View) {
+        if (view == coinRow1) {
+            collectCoin(topFourCoins[0])
+        } else if (view == coinRow2) {
+            collectCoin(topFourCoins[1])
+        } else if (view == coinRow3) {
+            collectCoin(topFourCoins[2])
+        } else if (view == coinRow4) {
+            collectCoin(topFourCoins[3])
+        }
+    }
+
+    private fun collectCoin(coinId: String) {
+        if (activity == null || currLocation == null) {
+            Log.e("collectCoin", "Activity or location was null")
+            return
+        }
+        val coins = (activity as MainActivity).coins
+
+        if (coins.getNumCollected() > 24) {
+            val toast = Toast.makeText(activity!!, "Can't collect any more coinz today!",
+                    Toast.LENGTH_SHORT)
+            toast.show()
+            return
+        }
+
+        if (coins.collectCoinById(coinId, currLocation!!)) {
+            // update list
+            fillFourNearestCoins()
+
+            val toast = Toast.makeText(activity!!, "Coin collected!", Toast.LENGTH_SHORT)
+            toast.show()
         }
     }
 

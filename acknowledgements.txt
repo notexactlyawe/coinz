@@ -17,3 +17,4 @@ https://firebase.google.com/docs/firestore/query-data/get-data
 https://firebase.google.com/docs/firestore/manage-data/data-types
 https://stackoverflow.com/questions/46633412/firebase-firestore-toobject-with-kotlin
 https://stackoverflow.com/questions/33696488/getting-bitmap-from-vector-drawable
+https://stackoverflow.com/questions/6091194/how-to-handle-button-clicks-using-the-xml-onclick-within-fragments

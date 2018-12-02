@@ -42,6 +42,27 @@ data class Coins(var coins: List<Coin> = listOf(),
                  var date: String = "") {
     val name = "$userId:$date"
 
+    fun getNumCollected(): Int {
+        return coins.filter { it.collected }.size
+    }
+
+    fun collectCoinById(id: String, userLocation: Location): Boolean {
+        try {
+            val coin = coins.first { it.coinId == id }
+
+            if (!coin.isCollectable(userLocation)) {
+                Log.e(javaClass.simpleName, "Coin $id not collectable")
+                return false
+            }
+
+            coin.collect()
+        } catch (e: NoSuchElementException) {
+            Log.e(javaClass.simpleName, "No coin found for ID $id")
+            return false
+        }
+        return true
+    }
+
     override fun toString(): String {
         return "${coins.size} coins. User: ${userId}, date: {$date}"
     }
