@@ -1,16 +1,18 @@
 package com.cameronmacleod.coinz
 
 import android.content.Context
+import android.graphics.Color
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TableRow
 import android.widget.Toast
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
@@ -19,21 +21,14 @@ import kotlinx.android.synthetic.main.content_main.*
 import org.json.JSONException
 import org.json.JSONObject
 
-/**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [OnFragmentInteractionListener] interface
- * to handle interaction events.
- *
- */
-class MainFragment : Fragment() {
-    private var listener: OnFragmentInteractionListener? = null
+class MainFragment : Fragment(), View.OnClickListener {
     private var currLocation: Location? = null
     private val stringIconMap = hashMapOf(
             "DOLR" to R.drawable.ic_dolr,
             "SHIL" to R.drawable.ic_shil,
             "PENY" to R.drawable.ic_peny,
             "QUID" to R.drawable.ic_quid)
+    private var topFourCoins = arrayOf("", "", "", "")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,13 +63,21 @@ class MainFragment : Fragment() {
             // user hasn't enabled location
             Log.e(this.javaClass.simpleName, "User hasn't enabled location: $e")
             val toast = Toast.makeText(activity, "Please enable location", Toast.LENGTH_LONG)
+            toast.show()
         }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.content_main, container, false)
+        val view = inflater.inflate(R.layout.content_main, container, false)
+
+        view.findViewById<TableRow>(R.id.coinRow1).setOnClickListener(this)
+        view.findViewById<TableRow>(R.id.coinRow2).setOnClickListener(this)
+        view.findViewById<TableRow>(R.id.coinRow3).setOnClickListener(this)
+        view.findViewById<TableRow>(R.id.coinRow4).setOnClickListener(this)
+
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -107,40 +110,36 @@ class MainFragment : Fragment() {
     }
 
     private fun fillFourNearestCoins() {
-        if (currLocation == null) {
-            // can't do anything until location comes in
+        if (currLocation == null || activity == null) {
+            // can't do anything until location comes in or if we have no attached activity
             return
         }
 
-        val sharedPrefs = activity?.getSharedPreferences(getString(R.string.preference_file_key),
-                Context.MODE_PRIVATE)
-        if (sharedPrefs == null) {
-            return
-        }
-        val geojsonStr = sharedPrefs.getString(getString(R.string.coinz_map_key), "")
-        val featureCollection = FeatureCollection.fromJson(geojsonStr)
+        val coins = (activity as MainActivity).coins
         // sort based on distance
-        featureCollection.features()?.sortedBy {
-            distanceToFeature(it)
+        coins.coins.sortedBy {
+            distanceToCoin(it)
+        }.filter {
+            !it.collected
         }.apply {
             // set currencies
             try {
-                this!!.get(0)?.properties()?.get("currency")!!.asString.apply {
+                this[0].currency.apply {
                     coinType1.text = this
                     imgCoinIcon1.setImageResource(
                             stringIconMap.getOrDefault(this, R.drawable.ic_coinz_24dp))
                 }
-                get(1)?.properties()?.get("currency")!!.asString.apply {
+                this[1].currency.apply {
                     coinType2.text = this
                     imgCoinIcon2.setImageResource(
                             stringIconMap.getOrDefault(this, R.drawable.ic_coinz_24dp))
                 }
-                get(2)?.properties()?.get("currency")!!.asString.apply {
+                this[2].currency.apply {
                     coinType3.text = this
                     imgCoinIcon3.setImageResource(
                             stringIconMap.getOrDefault(this, R.drawable.ic_coinz_24dp))
                 }
-                get(3)?.properties()?.get("currency")!!.asString.apply {
+                this[3].currency.apply {
                     coinType4.text = this
                     imgCoinIcon4.setImageResource(
                             stringIconMap.getOrDefault(this, R.drawable.ic_coinz_24dp))
@@ -150,48 +149,108 @@ class MainFragment : Fragment() {
             }
 
             // set values
-            coinValue1.text = this?.get(0)?.properties()?.get("marker-symbol")?.asString
-            coinValue2.text = this?.get(1)?.properties()?.get("marker-symbol")?.asString
-            coinValue3.text = this?.get(2)?.properties()?.get("marker-symbol")?.asString
-            coinValue4.text = this?.get(3)?.properties()?.get("marker-symbol")?.asString
+            coinValue1.text = this[0].amount.toInt().toString()
+            coinValue2.text = this[1].amount.toInt().toString()
+            coinValue3.text = this[2].amount.toInt().toString()
+            coinValue4.text = this[3].amount.toInt().toString()
 
             // set distances
-            coinDistance1.text = "${distanceToFeature(this?.get(0) as Feature).toInt()} metres"
-            coinDistance2.text = "${distanceToFeature(this?.get(1) as Feature).toInt()} metres"
-            coinDistance3.text = "${distanceToFeature(this?.get(2) as Feature).toInt()} metres"
-            coinDistance4.text = "${distanceToFeature(this?.get(3) as Feature).toInt()} metres"
+            coinDistance1.text = "${distanceToCoin(this[0]).toInt()} metres"
+            coinDistance2.text = "${distanceToCoin(this[1]).toInt()} metres"
+            coinDistance3.text = "${distanceToCoin(this[2]).toInt()} metres"
+            coinDistance4.text = "${distanceToCoin(this[3]).toInt()} metres"
 
-            // TODO: set directions
+            // set directions
+            coinDirection1.text = getDirectionToCoin(this[0])
+            coinDirection2.text = getDirectionToCoin(this[1])
+            coinDirection3.text = getDirectionToCoin(this[2])
+            coinDirection4.text = getDirectionToCoin(this[3])
+
+            // set collectable
+            if (this[0].isCollectable(currLocation!!))
+                coinRow1.setBackgroundColor(ContextCompat.getColor(activity!!, R.color.colorPrimary))
+            else
+                coinRow1.setBackgroundColor(Color.TRANSPARENT)
+            if (this[1].isCollectable(currLocation!!))
+                coinRow2.setBackgroundColor(ContextCompat.getColor(activity!!, R.color.colorPrimary))
+            else
+                coinRow2.setBackgroundColor(Color.TRANSPARENT)
+            if (this[2].isCollectable(currLocation!!))
+                coinRow3.setBackgroundColor(ContextCompat.getColor(activity!!, R.color.colorPrimary))
+            else
+                coinRow3.setBackgroundColor(Color.TRANSPARENT)
+            if (this[3].isCollectable(currLocation!!))
+                coinRow4.setBackgroundColor(ContextCompat.getColor(activity!!, R.color.colorPrimary))
+            else
+                coinRow4.setBackgroundColor(Color.TRANSPARENT)
+
+            // keep reference to coins
+            topFourCoins = arrayOf(this[0].coinId, this[1].coinId, this[2].coinId, this[3].coinId)
         }
     }
 
-    private fun distanceToFeature(feature: Feature): Float {
-        if (currLocation == null) return 0f;
+    override fun onClick(view: View) {
+        if (view == coinRow1) {
+            collectCoin(topFourCoins[0])
+        } else if (view == coinRow2) {
+            collectCoin(topFourCoins[1])
+        } else if (view == coinRow3) {
+            collectCoin(topFourCoins[2])
+        } else if (view == coinRow4) {
+            collectCoin(topFourCoins[3])
+        }
+    }
+
+    private fun collectCoin(coinId: String) {
+        if (activity == null || currLocation == null) {
+            Log.e("collectCoin", "Activity or location was null")
+            return
+        }
+        val coins = (activity as MainActivity).coins
+
+        if (coins.getNumCollected() > 24) {
+            val toast = Toast.makeText(activity!!, R.string.coin_limit_reached_text,
+                    Toast.LENGTH_SHORT)
+            toast.show()
+            return
+        }
+
+        if (coins.collectCoinById(coinId, currLocation!!)) {
+            // update list
+            fillFourNearestCoins()
+
+            updateUsersToCoinz(coins)
+
+            val toast = Toast.makeText(activity!!, R.string.coin_collected_text, Toast.LENGTH_SHORT)
+            toast.show()
+        }
+    }
+
+    private fun distanceToCoin(coin: Coin): Float {
+        if (currLocation == null) return 0f
 
         val loc = currLocation as Location
 
-        return loc.distanceTo(Location(loc).apply {
-            latitude = (feature.geometry() as Point).latitude()
-            longitude = (feature.geometry() as Point).longitude()
-        })
+        return loc.distanceTo(coin.getLocation())
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        listener?.onFragmentInteraction(uri)
-    }
+    private fun getDirectionToCoin(coin: Coin): String {
+        if (currLocation == null) return "North"
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
-            listener = context
-        } else {
-            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
+        val loc = currLocation as Location
+
+        val bearingDegrees = loc.bearingTo(coin.getLocation())
+
+        when {
+            bearingDegrees < 22.5  -> return "N"
+            bearingDegrees < 67.5  -> return "NE"
+            bearingDegrees < 112.5 -> return "E"
+            bearingDegrees < 157.5 -> return "SE"
+            bearingDegrees < 202.5 -> return "S"
+            bearingDegrees < 247.5 -> return "SW"
+            bearingDegrees < 292.5 -> return "W"
+            bearingDegrees < 337.5 -> return "NW"
+            else -> return "N"
         }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
     }
 }

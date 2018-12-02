@@ -10,3 +10,11 @@ https://stackoverflow.com/questions/14108400/how-to-align-text-vertically-center
 http://a-student.github.io/SvgToVectorDrawableConverter.Web/
 https://www.photopea.com/
 https://developer.android.com/reference/android/location/Location
+https://developer.android.com/guide/topics/location/strategies
+https://developer.android.com/training/permissions/requesting
+https://firebase.google.com/docs/firestore/manage-data/add-data
+https://firebase.google.com/docs/firestore/query-data/get-data
+https://firebase.google.com/docs/firestore/manage-data/data-types
+https://stackoverflow.com/questions/46633412/firebase-firestore-toobject-with-kotlin
+https://stackoverflow.com/questions/33696488/getting-bitmap-from-vector-drawable
+https://stackoverflow.com/questions/6091194/how-to-handle-button-clicks-using-the-xml-onclick-within-fragments

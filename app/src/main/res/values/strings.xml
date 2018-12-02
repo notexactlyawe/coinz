@@ -32,6 +32,6 @@
         screen.
     </string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="coin_collected_text">Coin collected!</string>
+    <string name="coin_limit_reached_text">Can\'t collect any more coinz today!</string>
 </resources>
