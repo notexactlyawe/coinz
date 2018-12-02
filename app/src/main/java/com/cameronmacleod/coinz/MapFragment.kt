@@ -67,6 +67,14 @@ class MapFragment : Fragment() {
                         }
                         mapboxMap.addMarker(m)
                     }
+
+                    val locationComponent = mapboxMap?.locationComponent
+                    try {
+                        locationComponent?.activateLocationComponent(activity!!)
+                        locationComponent?.isLocationComponentEnabled = true
+                    } catch (e: SecurityException) {
+                        Log.e(javaClass.simpleName, "No location permission when activating map location")
+                    }
                 } catch (e: Exception) {
                     Log.e(this.javaClass.simpleName, "Couldn't create GeoJSON source ${e.printStackTrace()}")
                 }

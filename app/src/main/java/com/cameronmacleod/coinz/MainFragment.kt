@@ -219,6 +219,8 @@ class MainFragment : Fragment(), View.OnClickListener {
             // update list
             fillFourNearestCoins()
 
+            updateUsersToCoinz(coins)
+
             val toast = Toast.makeText(activity!!, "Coin collected!", Toast.LENGTH_SHORT)
             toast.show()
         }

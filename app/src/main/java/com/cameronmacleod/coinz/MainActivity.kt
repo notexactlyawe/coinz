@@ -143,19 +143,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private fun createCoinsObject(coinsObj: Coins) {
-        val db = FirebaseFirestore.getInstance()
-        db.collection("usersToCoinz")
-                .document(coinsObj.name).set(coinsObj)
-                .addOnSuccessListener { reference ->
-                    Log.d("FireStore",
-                            "Document snapshot added with ID ${coinsObj.name}")
-                }
-                .addOnFailureListener { e ->
-                    Log.e("FireStore", "error adding document $e")
-                }
-    }
-
     private fun retrieveOrCreateCoinsObject(json: String) {
         // smart casts don't work when compiler can't guarantee that the variable can't
         // change between the check and the usage
@@ -167,7 +154,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .addOnCompleteListener { task ->
                     if (!task.isSuccessful || !task.result!!.exists()) {
                         coins = userCoinz
-                        createCoinsObject(userCoinz)
+                        updateUsersToCoinz(userCoinz)
                     } else {
                         Log.d("FireStore", "result: ${task.result}")
                         coins = task.result?.toObject(Coins::class.java)!!
@@ -178,7 +165,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .addOnFailureListener {
                     Log.d("FireStore", "Couldn't get ${userCoinz.name} from db\n$it")
                     coins = userCoinz
-                    createCoinsObject(userCoinz)
+                    updateUsersToCoinz(userCoinz)
                 }
     }
 
