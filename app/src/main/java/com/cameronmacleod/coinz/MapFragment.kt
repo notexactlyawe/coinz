@@ -16,7 +16,12 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.support.v4.content.ContextCompat
+import android.widget.Toast
+import com.mapbox.mapboxsdk.maps.MapboxMap
 
 class MapFragment : Fragment() {
     private lateinit var mapView: MapView
@@ -25,6 +30,7 @@ class MapFragment : Fragment() {
     private lateinit var quidBitmap: Bitmap
     private lateinit var penyBitmap: Bitmap
     private lateinit var collBitmap: Bitmap
+    private var map: MapboxMap? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +44,44 @@ class MapFragment : Fragment() {
             quidBitmap = getBitmapFromVectorDrawable(nonNullActivity, R.drawable.ic_quid)
             penyBitmap = getBitmapFromVectorDrawable(nonNullActivity, R.drawable.ic_peny)
             collBitmap = getBitmapFromVectorDrawable(nonNullActivity, R.drawable.ic_coinz_24dp)
+
+            // Acquire a reference to the system Location Manager
+            val locationManager = nonNullActivity.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+            // Define a listener that responds to location updates
+            val locationListener = object : LocationListener {
+
+                override fun onLocationChanged(location: Location) {
+                    // Called when a new location is found by the network location provider.
+                    val main = nonNullActivity as MainActivity
+                    collectNearbyCoins(location, main.coins)
+
+                    main.coins.coins[0].longitude = location.longitude
+                    main.coins.coins[0].latitude = location.latitude
+
+                    refreshMap()
+                }
+
+                override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {
+                }
+
+                override fun onProviderEnabled(provider: String) {
+                }
+
+                override fun onProviderDisabled(provider: String) {
+                }
+            }
+
+            try {
+                // Register the listener with the Location Manager to receive location updates
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0f, locationListener)
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0f, locationListener)
+            } catch (e: SecurityException) {
+                // user hasn't enabled location
+                Log.e(this.javaClass.simpleName, "User hasn't enabled location: $e")
+                val toast = Toast.makeText(nonNullActivity, "Please enable location", Toast.LENGTH_LONG)
+                toast.show()
+            }
         }
     }
 
@@ -56,6 +100,7 @@ class MapFragment : Fragment() {
             mapView.onCreate(savedInstanceState)
 
             mapView.getMapAsync { mapboxMap ->
+                this.map = mapboxMap
                 try {
                     val parent = activity as MainActivity
                     parent.coins.coins.forEach { coin ->
@@ -76,9 +121,58 @@ class MapFragment : Fragment() {
                         Log.e(javaClass.simpleName, "No location permission when activating map location")
                     }
                 } catch (e: Exception) {
-                    Log.e(this.javaClass.simpleName, "Couldn't create GeoJSON source ${e.printStackTrace()}")
+                    Log.e(this.javaClass.simpleName, "Error in creating map ${e.printStackTrace()}")
                 }
             }
+        }
+    }
+
+    fun collectNearbyCoins(location: Location, coins: Coins) {
+        if (coins.getNumCollected() > 24) {
+            val toast = Toast.makeText(activity, "Can't collect any more coinz today!",
+                    Toast.LENGTH_SHORT)
+            toast.show()
+            return
+        }
+
+        var coinsUpdated = false
+        coins.coins.filter {
+            (location.distanceTo(it.getLocation()) < 5) && !it.collected
+        }.forEach {
+            if (coins.getNumCollected() > 24) {
+                val toast = Toast.makeText(activity, R.string.coin_limit_reached_text,
+                        Toast.LENGTH_SHORT)
+                toast.show()
+                return
+            }
+            it.collect()
+            val toast = Toast.makeText(activity, R.string.coin_collected_text, Toast.LENGTH_SHORT)
+            toast.show()
+            coinsUpdated = true
+        }
+
+        if (coinsUpdated) {
+            updateUsersToCoinz(coins)
+        }
+    }
+
+    fun refreshMap() {
+        if (map == null || activity == null) {
+            return
+        }
+
+        map!!.removeAnnotations()
+
+        val parent = activity as MainActivity
+
+        parent.coins.coins.forEach { coin ->
+            val m = MarkerOptions().apply {
+                position = LatLng(coin.latitude, coin.longitude)
+                title = coin.currency
+                snippet = coin.amount.toInt().toString()
+                icon = getIcon(coin.collected, coin.currency)
+            }
+            map!!.addMarker(m)
         }
     }
 
