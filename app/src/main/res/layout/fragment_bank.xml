@@ -2,10 +2,13 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <LinearLayout
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:orientation="vertical">
+
+        <include layout="@layout/include_progress_overlay" />
 
         <TextView
             android:id="@+id/bankTitle"
@@ -14,8 +17,6 @@
             android:text="Banking"
             android:textSize="30sp"
             android:textStyle="bold" />
-
-        <View style="@style/HorizontalDivider" />
 
         <TextView
             android:id="@+id/collectedTitle"

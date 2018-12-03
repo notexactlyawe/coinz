@@ -20,3 +20,4 @@ https://stackoverflow.com/questions/33696488/getting-bitmap-from-vector-drawable
 https://stackoverflow.com/questions/6091194/how-to-handle-button-clicks-using-the-xml-onclick-within-fragments
 https://developer.android.com/guide/topics/ui/layout/recyclerview
 https://stackoverflow.com/questions/18021148/display-a-loading-overlay-on-android-screen
+https://stackoverflow.com/questions/36918219/how-to-disable-user-interaction-while-progressbar-is-visible-in-android

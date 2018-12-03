@@ -12,7 +12,8 @@ data class Coin(var coinId: String = "",
                 var longitude: Double = 0.0,
                 var currency: String = "",
                 var amount: Double = 0.0,
-                var collected: Boolean = false) {
+                var collected: Boolean = false,
+                var banked: Boolean = false) {
 
     fun getLocation(): Location {
         val loc = Location("geojson")

@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     lateinit var coins: Coins
     private val REQUEST_LOCATION = 1
     private var shownLocationExplanationDialog = false
-    private var userID: String? = null
+    var userID: String? = null
     private lateinit var progressOverlay: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
