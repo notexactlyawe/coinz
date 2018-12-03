@@ -56,9 +56,6 @@ class MapFragment : Fragment() {
                     val main = nonNullActivity as MainActivity
                     collectNearbyCoins(location, main.coins)
 
-                    main.coins.coins[0].longitude = location.longitude
-                    main.coins.coins[0].latitude = location.latitude
-
                     refreshMap()
                 }
 

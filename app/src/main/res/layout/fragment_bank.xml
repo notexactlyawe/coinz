@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="vertical">
+
+        <include layout="@layout/include_progress_overlay" />
+
+        <TextView
+            android:id="@+id/bankTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Banking"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/collectedTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Collected Coins"
+            android:textSize="24sp" />
+
+        <View style="@style/HorizontalDivider" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/collectedCoinsList"
+            android:scrollbars="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="260dp" >
+
+        </android.support.v7.widget.RecyclerView>
+
+        <TextView
+            android:id="@+id/balanceTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Bank Balance"
+            android:textSize="24sp" />
+
+        <View style="@style/HorizontalDivider"/>
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="left">
+
+                    <TextView
+                        android:id="@+id/shilLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="SHIL:"
+                        android:paddingRight="4dp"/>
+
+                    <TextView
+                        android:id="@+id/shilAmount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1.3486"
+                        android:paddingRight="4dp"/>
+
+                    <Button
+                        android:id="@+id/convertShil"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Convert" />
+                </LinearLayout>
+
+                <View style="@style/VerticalDivider"/>
+
+                <LinearLayout
+                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="right">
+
+                    <TextView
+                        android:id="@+id/dolrLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="DOLR:"
+                        android:paddingRight="4dp"/>
+
+                    <TextView
+                        android:id="@+id/dolrAmount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1.3486"
+                        android:paddingRight="4dp"/>
+
+                    <Button
+                        android:id="@+id/convertDolr"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Convert" />
+                </LinearLayout>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="left">
+
+                    <TextView
+                        android:id="@+id/quidLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="QUID:"
+                        android:paddingRight="4dp"/>
+
+                    <TextView
+                        android:id="@+id/quidAmount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1.3486"
+                        android:paddingRight="4dp"/>
+
+                    <Button
+                        android:id="@+id/convertQuid"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Convert" />
+                </LinearLayout>
+
+                <View style="@style/VerticalDivider"/>
+
+                <LinearLayout
+                    android:layout_height="match_parent"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="right">
+
+                    <TextView
+                        android:id="@+id/penyLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="PENY:"
+                        android:paddingRight="4dp"/>
+
+                    <TextView
+                        android:id="@+id/penyAmount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1.3486"
+                        android:paddingRight="4dp"/>
+
+                    <Button
+                        android:id="@+id/convertPeny"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Convert" />
+                </LinearLayout>
+            </TableRow>
+        </TableLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/goldLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="4dp"
+                android:text="GOLD:"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/goldAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="100.524"
+                android:textSize="24sp" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

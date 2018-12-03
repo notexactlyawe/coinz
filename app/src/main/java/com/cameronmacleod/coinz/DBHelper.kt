@@ -15,3 +15,16 @@ fun updateUsersToCoinz(coins: Coins) {
                 Log.e("FireStore", "error adding document $e")
             }
 }
+
+fun updateBank(bank: Bank) {
+    val db = FirebaseFirestore.getInstance()
+    db.collection("bank")
+            .document(bank.name).set(bank)
+            .addOnSuccessListener { reference ->
+                Log.d("FireStore",
+                        "Document snapshot added with ID ${bank.name}")
+            }
+            .addOnFailureListener { e ->
+                Log.e("FireStore", "error adding document $e")
+            }
+}
