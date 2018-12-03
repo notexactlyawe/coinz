@@ -12,9 +12,6 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -22,6 +19,9 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
 import kotlinx.android.synthetic.main.toolbar.*
 import java.util.*
+import android.view.animation.AlphaAnimation
+import android.view.*
+
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private lateinit var netHelper: NetHelper
@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private val REQUEST_LOCATION = 1
     private var shownLocationExplanationDialog = false
     private var userID: String? = null
+    private lateinit var progressOverlay: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +43,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
+
+        progressOverlay = findViewById(R.id.progress_overlay)
+        animateProgressBarIn()
 
         // Make sure current screen is selected in navigation drawer
         nvView.setNavigationItemSelectedListener(this)
@@ -57,6 +61,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         fragmentTransaction.commit()
 
         checkLocationPermission()
+    }
+
+    private fun animateProgressBarIn() {
+        val inAnimation = AlphaAnimation(0f, 1f)
+        inAnimation.setDuration(200)
+        progressOverlay.setAnimation(inAnimation)
+        progressOverlay.setVisibility(View.VISIBLE)
+        window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+    }
+
+    private fun animateProgressBarOut() {
+        val outAnimation = AlphaAnimation(1f, 0f)
+        outAnimation.setDuration(200)
+        progressOverlay.setAnimation(outAnimation)
+        progressOverlay.setVisibility(View.GONE)
+        window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
     private fun checkLocationPermission() {
@@ -161,11 +182,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         Log.d(javaClass.simpleName, coins.toString())
                         Log.d(javaClass.simpleName, coins.coins.get(0).toString())
                     }
+                    animateProgressBarOut()
                 }
                 .addOnFailureListener {
                     Log.d("FireStore", "Couldn't get ${userCoinz.name} from db\n$it")
                     coins = userCoinz
                     updateUsersToCoinz(userCoinz)
+                    animateProgressBarOut()
                 }
     }
 
@@ -214,7 +237,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             }
             R.id.nav_bank -> {
-
+                val fragment = BankFragment()
+                fragmentTransaction.replace(R.id.flContent, fragment)
             }
             R.id.nav_friends -> {
 
