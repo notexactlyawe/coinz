@@ -21,3 +21,4 @@ https://stackoverflow.com/questions/6091194/how-to-handle-button-clicks-using-th
 https://developer.android.com/guide/topics/ui/layout/recyclerview
 https://stackoverflow.com/questions/18021148/display-a-loading-overlay-on-android-screen
 https://stackoverflow.com/questions/36918219/how-to-disable-user-interaction-while-progressbar-is-visible-in-android
+https://stackoverflow.com/questions/29451768/recyclerview-bind-the-view-holders-again
