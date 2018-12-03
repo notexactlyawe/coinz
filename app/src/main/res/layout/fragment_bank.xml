@@ -8,8 +8,6 @@
         android:layout_width="match_parent"
         android:orientation="vertical">
 
-        <include layout="@layout/include_progress_overlay" />
-
         <TextView
             android:id="@+id/bankTitle"
             android:layout_width="match_parent"
@@ -31,9 +29,7 @@
             android:id="@+id/collectedCoinsList"
             android:scrollbars="vertical"
             android:layout_width="match_parent"
-            android:layout_height="260dp" >
-
-        </android.support.v7.widget.RecyclerView>
+            android:layout_height="260dp" />
 
         <TextView
             android:id="@+id/balanceTitle"

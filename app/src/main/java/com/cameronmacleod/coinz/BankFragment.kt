@@ -28,7 +28,6 @@ class BankFragment : Fragment(), View.OnClickListener {
     private lateinit var collectedCoins: MutableList<Coin>
     private lateinit var originalCoins: Coins
     private lateinit var bank: Bank
-    private lateinit var progressOverlay: View
     private lateinit var fragmentView: View
     private var exchangeRates = hashMapOf(
             "DOLR" to 0.0,
@@ -41,7 +40,9 @@ class BankFragment : Fragment(), View.OnClickListener {
         // Inflate the layout for this fragment
         fragmentView = inflater.inflate(R.layout.fragment_bank, container, false)
 
-        originalCoins = (activity as MainActivity).coins
+        val mainActivity = (activity as MainActivity)
+
+        originalCoins = mainActivity.coins
 
         collectedCoins = originalCoins.coins.filter {
             it.collected && !it.banked
@@ -57,8 +58,7 @@ class BankFragment : Fragment(), View.OnClickListener {
             adapter = viewAdapter
         }
 
-        progressOverlay = fragmentView.findViewById(R.id.progress_overlay)
-        animateProgressBarIn()
+        mainActivity.animateProgressBarIn()
 
         fillRates()
 
@@ -68,31 +68,12 @@ class BankFragment : Fragment(), View.OnClickListener {
         fragmentView.findViewById<Button>(R.id.convertShil).setOnClickListener(this)
 
         val userID = (activity as MainActivity).userID!!
-        getOrCreateBank(userID)
+        getOrCreateBank(userID) { bank ->
+            this.bank = bank
+            mainActivity.animateProgressBarOut()
+            setBalanceLabels()
+        }
         return fragmentView
-    }
-
-    private fun getOrCreateBank(userID: String) {
-        val db = FirebaseFirestore.getInstance()
-        db.collection("bank").document(userID).get()
-                .addOnCompleteListener { task ->
-                    if (!task.isSuccessful || !task.result!!.exists()) {
-                        bank = Bank(name=userID)
-                        updateBank(bank)
-                    } else {
-                        Log.d("Firestore", "result: ${task.result}")
-                        bank = task.result?.toObject(Bank::class.java)!!
-                    }
-                    animateProgressBarOut()
-                    setBalanceLabels()
-                }
-                .addOnFailureListener {
-                    Log.d("FireStore", "Couldn't get $userID from bank table\n$it")
-                    bank = Bank(name=userID)
-                    updateBank(bank)
-                    animateProgressBarOut()
-                    setBalanceLabels()
-                }
     }
 
     private fun fillRates() {
@@ -116,23 +97,6 @@ class BankFragment : Fragment(), View.OnClickListener {
             toast.show()
             Log.e(this.javaClass.simpleName, "Error getting rates from geojson: ${e.localizedMessage}")
         }
-    }
-
-    private fun animateProgressBarIn() {
-        val inAnimation = AlphaAnimation(0f, 1f)
-        inAnimation.setDuration(200)
-        progressOverlay.setAnimation(inAnimation)
-        progressOverlay.setVisibility(View.VISIBLE)
-        activity!!.window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
-    }
-
-    private fun animateProgressBarOut() {
-        val outAnimation = AlphaAnimation(1f, 0f)
-        outAnimation.setDuration(200)
-        progressOverlay.setAnimation(outAnimation)
-        progressOverlay.setVisibility(View.GONE)
-        activity!!.window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
     private fun setBalanceLabels() {
@@ -204,36 +168,4 @@ class BankFragment : Fragment(), View.OnClickListener {
         updateBank(bank)
         setBalanceLabels()
     }
-}
-
-class CollectedCoinsAdapter(private val coins: MutableList<Coin>, val callback: (Int) -> Unit) :
-        RecyclerView.Adapter<CollectedCoinsAdapter.MyViewHolder>() {
-
-    private val stringIconMap = hashMapOf(
-            "DOLR" to R.drawable.ic_dolr,
-            "SHIL" to R.drawable.ic_shil,
-            "PENY" to R.drawable.ic_peny,
-            "QUID" to R.drawable.ic_quid)
-
-    class MyViewHolder(val view: View) : RecyclerView.ViewHolder(view)
-
-    override fun onCreateViewHolder(parent: ViewGroup,
-                                    viewType: Int): CollectedCoinsAdapter.MyViewHolder {
-        val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.coin_item, parent, false)
-        return MyViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val coin = coins[position]
-        holder.view.findViewById<ImageView>(R.id.coinIcon)
-                .setImageResource(stringIconMap.getOrDefault(coin.currency, R.drawable.ic_coinz_24dp))
-        holder.view.findViewById<TextView>(R.id.coinType).text = coin.currency
-        holder.view.findViewById<TextView>(R.id.coinValue).text = coin.amount.toString()
-        holder.view.findViewById<Button>(R.id.bankButton).setOnClickListener {
-            callback(position)
-        }
-    }
-
-    override fun getItemCount() = coins.size
 }

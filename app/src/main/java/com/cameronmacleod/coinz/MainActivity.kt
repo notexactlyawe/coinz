@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         checkLocationPermission()
     }
 
-    private fun animateProgressBarIn() {
+    fun animateProgressBarIn() {
         val inAnimation = AlphaAnimation(0f, 1f)
         inAnimation.setDuration(200)
         progressOverlay.setAnimation(inAnimation)
@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
-    private fun animateProgressBarOut() {
+    fun animateProgressBarOut() {
         val outAnimation = AlphaAnimation(1f, 0f)
         outAnimation.setDuration(200)
         progressOverlay.setAnimation(outAnimation)
@@ -241,7 +241,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 fragmentTransaction.replace(R.id.flContent, fragment)
             }
             R.id.nav_friends -> {
-
+                val fragment = SendCoinzFragment()
+                fragmentTransaction.replace(R.id.flContent, fragment)
             }
             R.id.nav_upgrade -> {
 
