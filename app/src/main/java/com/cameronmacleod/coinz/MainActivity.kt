@@ -247,9 +247,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 val fragment = SendCoinzFragment()
                 fragmentTransaction.replace(R.id.flContent, fragment)
             }
-            R.id.nav_upgrade -> {
-
-            }
             R.id.nav_leaderboard -> {
 
             }

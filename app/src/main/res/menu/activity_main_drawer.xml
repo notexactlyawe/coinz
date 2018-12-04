@@ -22,10 +22,6 @@
             android:icon="@drawable/ic_people_black_24dp"
             android:title="@string/friends_screen" />
         <item
-            android:id="@+id/nav_upgrade"
-            android:icon="@drawable/ic_upgrade_black_24dp"
-            android:title="@string/upgrade_screen" />
-        <item
             android:id="@+id/nav_leaderboard"
             android:icon="@drawable/ic_leaderboard_black_24dp"
             android:title="@string/leaderboard_screen" />
