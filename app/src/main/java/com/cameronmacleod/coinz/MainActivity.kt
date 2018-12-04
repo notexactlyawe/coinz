@@ -200,6 +200,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         startActivity(intent)
     }
 
+    fun onShopButtonClicked(view: View) {
+        nvView.setCheckedItem(R.id.nav_shop)
+        onNavigationItemSelected(nvView.menu.findItem(R.id.nav_shop))
+    }
+
     override fun onBackPressed() {
         if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
             drawer_layout.closeDrawer(GravityCompat.START)
@@ -235,7 +240,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 fragmentTransaction.replace(R.id.flContent, fragment)
             }
             R.id.nav_shop -> {
-
+                val fragment = ShopFragment()
+                fragmentTransaction.replace(R.id.flContent, fragment)
             }
             R.id.nav_bank -> {
                 val fragment = BankFragment()

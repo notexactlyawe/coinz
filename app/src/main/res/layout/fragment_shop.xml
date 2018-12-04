@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ShopFragment">
+
+
+    <TextView
+        android:id="@+id/shopTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Shop"
+        android:textSize="30sp" />
+
+    <TextView
+        android:id="@+id/upgradeTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Upgrades"
+        android:textSize="24sp" />
+
+    <View style="@style/HorizontalDivider" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp">
+
+        <TextView
+            android:id="@+id/mapTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/map_upgrade_title"
+            android:layout_gravity="center"/>
+
+        <TextView
+            android:id="@+id/mapDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:maxWidth="100dp"
+            android:text="@string/map_upgrade_description" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:text="Buy" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/trapTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Traps"
+        android:textSize="24sp" />
+
+    <View style="@style/HorizontalDivider"/>
+</LinearLayout>

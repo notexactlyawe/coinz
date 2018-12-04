@@ -50,4 +50,10 @@
     <string name="coin_send_success">Coin sent!</string>
 
     <string name="no_spare_change">You have no spare coins to send!</string>
+
+    <string name="map_upgrade_title">Map</string>
+    <string name="map_upgrade_description">
+        Frustrated at only seeing 4 coinz at a time? The map upgrade enables you to see them all at once
+        alongside your own location! Use this to collect more coinz faster.
+    </string>
 </resources>
