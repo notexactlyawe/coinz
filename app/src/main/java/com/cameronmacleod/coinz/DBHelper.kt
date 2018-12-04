@@ -48,3 +48,37 @@ fun getOrCreateBank(userID: String, callback: (Bank) -> Unit) {
                 callback(bank)
             }
 }
+
+fun updateUser(userID: String, email: String) {
+    val data = HashMap<String, Any>()
+    data["id"] = userID
+
+    val db = FirebaseFirestore.getInstance()
+    db.collection("user")
+            .document(email).set(data)
+            .addOnSuccessListener { reference ->
+                Log.d("FireStore",
+                        "User added or updated with ID $userID")
+            }
+            .addOnFailureListener { e ->
+                Log.e("FireStore", "error adding document $e")
+            }
+}
+
+fun getUserIDForEmail(email: String, callbackWithId: (String?) -> Unit) {
+    val db = FirebaseFirestore.getInstance()
+    db.collection("user")
+            .document(email).get()
+            .addOnCompleteListener { task ->
+                if (!task.isSuccessful || !task.result!!.exists()) {
+                    callbackWithId(null)
+                } else {
+                    Log.d("Firestore", "result: ${task.result}")
+                    callbackWithId(task.result?.get("id").toString())
+                }
+            }
+            .addOnFailureListener {
+                Log.d("FireStore", "Couldn't get $email from user table\n$it")
+                callbackWithId(null)
+            }
+}
