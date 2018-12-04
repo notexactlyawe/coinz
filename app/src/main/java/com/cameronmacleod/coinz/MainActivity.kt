@@ -26,7 +26,7 @@ import android.view.*
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private lateinit var netHelper: NetHelper
     // public so fragments can use
-    lateinit var coins: Coins
+    var coins: Coins? = null
     private val REQUEST_LOCATION = 1
     private var shownLocationExplanationDialog = false
     var userID: String? = null
@@ -142,6 +142,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
 
             userEmail.text = user.email
+
+            // can force non-null because only use Google auth
+            updateUser(user.uid, user.email!!)
         }
     }
 
@@ -180,7 +183,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         Log.d("FireStore", "result: ${task.result}")
                         coins = task.result?.toObject(Coins::class.java)!!
                         Log.d(javaClass.simpleName, coins.toString())
-                        Log.d(javaClass.simpleName, coins.coins.get(0).toString())
+                        Log.d(javaClass.simpleName, coins?.coins?.get(0).toString())
                     }
                     animateProgressBarOut()
                 }

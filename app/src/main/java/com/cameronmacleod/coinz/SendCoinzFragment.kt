@@ -25,7 +25,7 @@ class SendCoinzFragment : Fragment() {
 
         val mainActivity = (activity as MainActivity)
 
-        originalCoins = mainActivity.coins
+        originalCoins = mainActivity.coins!!
 
         collectedCoins = originalCoins.coins.filter {
             it.collected && !it.banked
