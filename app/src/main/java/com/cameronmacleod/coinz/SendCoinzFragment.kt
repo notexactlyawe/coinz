@@ -57,8 +57,8 @@ class SendCoinzFragment : Fragment(), SendToFriendDialog.NoticeDialogListener {
 
         mainActivity.animateProgressBarIn()
 
-        val userID = (activity as MainActivity).userID!!
-        getOrCreateBank(userID) {
+        val user = (activity as MainActivity).user!!
+        getOrCreateBank(user.uid, user.email!!) {
             this.bank = it
             mainActivity.animateProgressBarOut()
         }
@@ -66,8 +66,8 @@ class SendCoinzFragment : Fragment(), SendToFriendDialog.NoticeDialogListener {
     }
 
     override fun onUserIDGottenClick(uid: String) {
-        val currentUserId = (activity as MainActivity).userID
-        if (uid == currentUserId) {
+        val currentUser = (activity as MainActivity).user!!
+        if (uid == currentUser.uid) {
             val toast = Toast.makeText(activity, R.string.send_coin_to_self, Toast.LENGTH_SHORT)
             toast.show()
             return

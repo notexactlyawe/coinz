@@ -29,9 +29,9 @@ fun updateBank(bank: Bank) {
             }
 }
 
-fun getOrCreateBank(userID: String, callback: (Bank) -> Unit) {
+fun getOrCreateBank(userID: String, email: String = "", callback: (Bank) -> Unit) {
     val db = FirebaseFirestore.getInstance()
-    var bank = Bank(name=userID)
+    var bank = Bank(email = email, name = userID)
     db.collection("bank").document(userID).get()
             .addOnCompleteListener { task ->
                 if (!task.isSuccessful || !task.result!!.exists()) {

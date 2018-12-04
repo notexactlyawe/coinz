@@ -67,8 +67,8 @@ class BankFragment : Fragment(), View.OnClickListener {
         fragmentView.findViewById<Button>(R.id.convertDolr).setOnClickListener(this)
         fragmentView.findViewById<Button>(R.id.convertShil).setOnClickListener(this)
 
-        val userID = (activity as MainActivity).userID!!
-        getOrCreateBank(userID) { bank ->
+        val user = (activity as MainActivity).user!!
+        getOrCreateBank(user.uid, user.email!!) { bank ->
             this.bank = bank
             mainActivity.animateProgressBarOut()
             setBalanceLabels()
