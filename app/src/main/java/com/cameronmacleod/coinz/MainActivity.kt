@@ -1,5 +1,9 @@
 package com.cameronmacleod.coinz
 
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModel
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -21,15 +25,16 @@ import kotlinx.android.synthetic.main.toolbar.*
 import java.util.*
 import android.view.animation.AlphaAnimation
 import android.view.*
+import com.google.firebase.auth.FirebaseUser
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private lateinit var netHelper: NetHelper
     // public so fragments can use
     var coins: Coins? = null
+    var user: FirebaseUser? = null
     private val REQUEST_LOCATION = 1
     private var shownLocationExplanationDialog = false
-    var userID: String? = null
     private lateinit var progressOverlay: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +43,27 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setSupportActionBar(toolbar)
 
         netHelper = NetHelper(this)
+
+        val mainViewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
+        mainViewModel.user.observe(this, Observer { user ->
+            if (user != null) {
+                this.user = user
+                if (user.photoUrl == null) {
+                    Log.w("MainActivity", "User had no profile picture")
+                } else {
+                    netHelper.getProfilePicture(user.photoUrl.toString(), userProfilePic.scaleType
+                    ) { bitmap ->
+                        Log.d(javaClass.simpleName, "Got bitmap from url ${user.photoUrl}")
+                        userProfilePic.setImageBitmap(bitmap)
+                    }
+                }
+
+                userEmail.text = user.email
+
+                // can force non-null because only use Google auth
+                updateUser(user.uid, user.email!!)
+            }
+        })
 
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
@@ -50,8 +76,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Make sure current screen is selected in navigation drawer
         nvView.setNavigationItemSelectedListener(this)
         nvView.setCheckedItem(R.id.nav_main)
-
-        FirebaseAuth.getInstance().addAuthStateListener(::firebaseAuthListener)
 
         fetchData()
 
@@ -123,31 +147,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private fun firebaseAuthListener(auth: FirebaseAuth) {
-        val user = auth.currentUser
-        if (user == null) {
-            // user signed out
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-        } else {
-            userID = user.uid
-            if (user.photoUrl == null) {
-                Log.w("MainActivity", "User had no profile picture")
-            } else {
-                netHelper.getProfilePicture(user.photoUrl.toString(), userProfilePic.scaleType
-                ) { bitmap ->
-                    Log.d(javaClass.simpleName, "Got bitmap from url ${user.photoUrl}")
-                    userProfilePic.setImageBitmap(bitmap)
-                }
-            }
-
-            userEmail.text = user.email
-
-            // can force non-null because only use Google auth
-            updateUser(user.uid, user.email!!)
-        }
-    }
-
     private fun fetchData() {
         netHelper.getJSONForDay(Calendar.getInstance().time) { response ->
             Log.d("FetchData response", response.toString())
@@ -159,7 +158,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 apply()
             }
 
-            if (userID == null) {
+            if (user?.uid == null) {
                 Log.e(javaClass.simpleName, "User ID was null, can't access user data")
             } else {
                 retrieveOrCreateCoinsObject(response.toString())
@@ -168,11 +167,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun retrieveOrCreateCoinsObject(json: String) {
-        // smart casts don't work when compiler can't guarantee that the variable can't
-        // change between the check and the usage
         val db = FirebaseFirestore.getInstance()
 
-        val userCoinz = Coins.fromJson(json, userID!!, Calendar.getInstance().time)
+        val userCoinz = Coins.fromJson(json, user!!.uid, Calendar.getInstance().time)
 
         db.collection("usersToCoinz").document(userCoinz.name).get()
                 .addOnCompleteListener { task ->
@@ -197,9 +194,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     fun onSignOutButtonClicked(view: View) {
         with (FirebaseAuth.getInstance()) {
-            removeAuthStateListener(::firebaseAuthListener)
             signOut()
         }
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
     }
 
     override fun onBackPressed() {
@@ -248,7 +246,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 fragmentTransaction.replace(R.id.flContent, fragment)
             }
             R.id.nav_leaderboard -> {
-
+                val fragment = LeaderboardFragment()
+                fragmentTransaction.replace(R.id.flContent, fragment)
             }
             R.id.nav_map -> {
                 val fragment = MapFragment()
@@ -260,5 +259,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
+    }
+}
+
+class MainViewModel: ViewModel() {
+    val user = UserLiveData()
+}
+
+class UserLiveData: LiveData<FirebaseUser?>() {
+    init {
+        value = null
+        FirebaseAuth.getInstance().addAuthStateListener {
+            value = it.currentUser
+        }
     }
 }
