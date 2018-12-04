@@ -34,4 +34,20 @@
 
     <string name="coin_collected_text">Coin collected!</string>
     <string name="coin_limit_reached_text">Can\'t collect any more coinz today!</string>
+
+    <string name="send">Send</string>
+    <string name="cancel">Cancel</string>
+
+    <string name="send_friend_message">Please enter a friend\'s email address below to send your coin to them.</string>
+
+    <string name="send_friend_title">Send a coin to a friend</string>
+
+    <string name="friend_email_hint">Friend\'s email</string>
+
+    <string name="no_friend_found">No friend found for that email address. Please try again!</string>
+
+    <string name="send_coin_to_self">You can\'t send a coin to yourself!</string>
+    <string name="coin_send_success">Coin sent!</string>
+
+    <string name="no_spare_change">You have no spare coins to send!</string>
 </resources>

@@ -42,7 +42,7 @@ class BankFragment : Fragment(), View.OnClickListener {
 
         val mainActivity = (activity as MainActivity)
 
-        originalCoins = mainActivity.coins
+        originalCoins = mainActivity.coins!!
 
         collectedCoins = originalCoins.coins.filter {
             it.collected && !it.banked

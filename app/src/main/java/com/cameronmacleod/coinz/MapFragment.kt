@@ -54,7 +54,10 @@ class MapFragment : Fragment() {
                 override fun onLocationChanged(location: Location) {
                     // Called when a new location is found by the network location provider.
                     val main = nonNullActivity as MainActivity
-                    collectNearbyCoins(location, main.coins)
+                    if (main.coins == null) {
+                        return
+                    }
+                    collectNearbyCoins(location, main.coins!!)
 
                     refreshMap()
                 }
@@ -100,7 +103,7 @@ class MapFragment : Fragment() {
                 this.map = mapboxMap
                 try {
                     val parent = activity as MainActivity
-                    parent.coins.coins.forEach { coin ->
+                    parent.coins?.coins?.forEach { coin ->
                         val m = MarkerOptions().apply {
                             position = LatLng(coin.latitude, coin.longitude)
                             title = coin.currency
@@ -162,7 +165,7 @@ class MapFragment : Fragment() {
 
         val parent = activity as MainActivity
 
-        parent.coins.coins.forEach { coin ->
+        parent.coins?.coins?.forEach { coin ->
             val m = MarkerOptions().apply {
                 position = LatLng(coin.latitude, coin.longitude)
                 title = coin.currency

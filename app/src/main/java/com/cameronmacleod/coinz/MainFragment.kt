@@ -93,6 +93,12 @@ class MainFragment : Fragment(), View.OnClickListener {
             return
         }
         val geojsonStr = sharedPrefs.getString(getString(R.string.coinz_map_key), "")
+
+        if (geojsonStr == "") {
+            Log.w(javaClass.simpleName, "coinzmap hasn't yet been initialized")
+            return
+        }
+
         val geojson = JSONObject(geojsonStr)
 
         try {
@@ -115,7 +121,7 @@ class MainFragment : Fragment(), View.OnClickListener {
             return
         }
 
-        val coins = (activity as MainActivity).coins
+        val coins = (activity as MainActivity).coins ?: return
         // sort based on distance
         coins.coins.sortedBy {
             distanceToCoin(it)
@@ -207,6 +213,11 @@ class MainFragment : Fragment(), View.OnClickListener {
             return
         }
         val coins = (activity as MainActivity).coins
+
+        if (coins == null) {
+            Log.w(javaClass.simpleName, "coins was null in collectCoin")
+            return
+        }
 
         if (coins.getNumCollected() > 24) {
             val toast = Toast.makeText(activity!!, R.string.coin_limit_reached_text,
