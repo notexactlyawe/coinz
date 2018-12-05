@@ -59,6 +59,10 @@ class MainFragment : Fragment(), View.OnClickListener {
             // Register the listener with the Location Manager to receive location updates
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0f, locationListener)
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0f, locationListener)
+            // try network provider, but if null, try GPS
+            currLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER) ?:
+                    locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+            Log.d(javaClass.simpleName, "Location listener registered, last known location: $currLocation")
         } catch (e: SecurityException) {
             // user hasn't enabled location
             Log.e(this.javaClass.simpleName, "User hasn't enabled location: $e")
