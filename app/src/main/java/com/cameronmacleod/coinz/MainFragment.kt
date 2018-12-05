@@ -21,6 +21,9 @@ import kotlinx.android.synthetic.main.content_main.*
 import org.json.JSONException
 import org.json.JSONObject
 
+/**
+ * Fragment that implements blind mode. Shows nearest 4 coins and exchange rates for the day
+ */
 class MainFragment : Fragment(), View.OnClickListener {
     private var currLocation: Location? = null
     private val stringIconMap = hashMapOf(
@@ -45,6 +48,7 @@ class MainFragment : Fragment(), View.OnClickListener {
                 fillFourNearestCoins()
             }
 
+            // The below functions are just included since they are abstract
             override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {
             }
 
@@ -90,6 +94,11 @@ class MainFragment : Fragment(), View.OnClickListener {
         fillFourNearestCoins()
     }
 
+    /**
+     * Displays the exchange rates for the day
+     *
+     * Gets data from GeoJSON in SharedPrefs
+     */
     private fun fillRates() {
         val sharedPrefs = activity?.getSharedPreferences(getString(R.string.preference_file_key),
                 Context.MODE_PRIVATE)
@@ -119,6 +128,9 @@ class MainFragment : Fragment(), View.OnClickListener {
         }
     }
 
+    /**
+     * Displays information about the four nearest coinz
+     */
     private fun fillFourNearestCoins() {
         if (currLocation == null || activity == null) {
             // can't do anything until location comes in or if we have no attached activity
@@ -199,6 +211,9 @@ class MainFragment : Fragment(), View.OnClickListener {
         }
     }
 
+    /**
+     * Listens to click events for the four nearest coins
+     */
     override fun onClick(view: View) {
         if (view == coinRow1) {
             collectCoin(topFourCoins[0])
@@ -211,6 +226,9 @@ class MainFragment : Fragment(), View.OnClickListener {
         }
     }
 
+    /**
+     * Attempts to collect a coin
+     */
     private fun collectCoin(coinId: String) {
         if (activity == null || currLocation == null) {
             Log.e("collectCoin", "Activity or location was null")
@@ -234,6 +252,9 @@ class MainFragment : Fragment(), View.OnClickListener {
         }
     }
 
+    /**
+     * Returns the distance between a coin and the user
+     */
     private fun distanceToCoin(coin: Coin): Float {
         if (currLocation == null) return 0f
 
@@ -242,6 +263,11 @@ class MainFragment : Fragment(), View.OnClickListener {
         return loc.distanceTo(coin.getLocation())
     }
 
+    /**
+     * Gets the direction to a coin as a string
+     *
+     * Returns based on segments around each of 8 cardinal directions
+     */
     private fun getDirectionToCoin(coin: Coin): String {
         if (currLocation == null) return "North"
 

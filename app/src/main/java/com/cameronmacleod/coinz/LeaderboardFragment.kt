@@ -14,6 +14,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import java.text.DecimalFormat
 
+/**
+ * Simple fragment that contains a list of the top 10 users of the app ranked by their gold balance
+ */
 class LeaderboardFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
@@ -26,38 +29,34 @@ class LeaderboardFragment : Fragment() {
 
         val mainActivity = (activity as MainActivity)
 
+        // start spinner whilst we get the list of bank balances
         mainActivity.animateProgressBarIn()
 
-        val db = FirebaseFirestore.getInstance()
+        getTopNBanks(10) { banks ->
+            if (banks == null) {
+                Log.e(javaClass.simpleName, "Couldn't get banks")
+            } else {
+                viewManager = LinearLayoutManager(activity)
+                viewAdapter = LeaderboardAdapter(banks)
 
-        db.collection("bank")
-                .orderBy("goldBalance", Query.Direction.DESCENDING)
-                .limit(10).get()
-                .addOnCompleteListener {
-                    val banks = it.result?.toObjects(Bank::class.java)
-
-                    if (banks == null) {
-                        Log.e(javaClass.simpleName, "Couldn't get banks")
-                    } else {
-                        viewManager = LinearLayoutManager(activity)
-                        viewAdapter = LeaderboardAdapter(banks)
-
-                        recyclerView = fragmentView.findViewById<RecyclerView>(R.id.topPlayersList).apply {
-                            // improves performance since each element is same size
-                            setHasFixedSize(true)
-                            layoutManager = viewManager
-                            adapter = viewAdapter
-                        }
-
-                        mainActivity.animateProgressBarOut()
-                    }
+                recyclerView = fragmentView.findViewById<RecyclerView>(R.id.topPlayersList).apply {
+                    // improves performance since each element is same size
+                    setHasFixedSize(true)
+                    layoutManager = viewManager
+                    adapter = viewAdapter
                 }
+            }
+            mainActivity.animateProgressBarOut()
+        }
 
         return fragmentView
     }
 }
 
-class LeaderboardAdapter(private val banks: MutableList<Bank>) :
+/**
+ * A [RecyclerView.Adapter] for the leaderboard. Displays a list of the top users
+ */
+class LeaderboardAdapter(private val banks: List<Bank>) :
         RecyclerView.Adapter<LeaderboardAdapter.MyViewHolder>() {
 
     class MyViewHolder(val view: View) : RecyclerView.ViewHolder(view)

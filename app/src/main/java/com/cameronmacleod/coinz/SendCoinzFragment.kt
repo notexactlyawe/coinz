@@ -13,13 +13,16 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 
+/**
+ * Fragment that enables users to send spare change or coins that they haven't yet
+ * banked to their friends
+ */
 class SendCoinzFragment : Fragment(), SendToFriendDialog.NoticeDialogListener {
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var collectedCoins: MutableList<Coin>
     private lateinit var originalCoins: Coins
-    private lateinit var bank: Bank
     private lateinit var fragmentView: View
     private var selectedCoinIndex: Int? = null
 
@@ -31,14 +34,17 @@ class SendCoinzFragment : Fragment(), SendToFriendDialog.NoticeDialogListener {
 
         originalCoins = mainActivity.coins!!
 
+        // obtain a list of collected but not banked coins
         collectedCoins = originalCoins.coins.filter {
             it.collected && !it.banked
         } as MutableList<Coin>
 
+        // show a message if no coins can be sent
         if (collectedCoins.size == 0) {
             fragmentView.findViewById<TextView>(R.id.no_spare_change).visibility = View.VISIBLE
         }
 
+        // Initialise the RecyclerView that displays the coins to send
         viewManager = LinearLayoutManager(activity)
         viewAdapter = CollectedCoinsAdapter(collectedCoins) {
             Log.d("Button clicked", "position was $it")
@@ -55,16 +61,14 @@ class SendCoinzFragment : Fragment(), SendToFriendDialog.NoticeDialogListener {
             adapter = viewAdapter
         }
 
-        mainActivity.animateProgressBarIn()
-
-        val user = (activity as MainActivity).user!!
-        getOrCreateBank(user.uid, user.email!!) {
-            this.bank = it
-            mainActivity.animateProgressBarOut()
-        }
         return fragmentView
     }
 
+    /**
+     * Called when SendToFriendDialog gets a valid user ID
+     *
+     * @param uid The ID of the user to send the coin to
+     */
     override fun onUserIDGottenClick(uid: String) {
         val currentUser = (activity as MainActivity).user!!
         if (uid == currentUser.uid) {
@@ -81,6 +85,7 @@ class SendCoinzFragment : Fragment(), SendToFriendDialog.NoticeDialogListener {
         // copy in case another coin sent in mean time
         val copyOfIndex = selectedCoinIndex as Int
 
+        // get their bank to edit it
         getOrCreateBank(uid) { theirBank ->
             val coin = collectedCoins[copyOfIndex]
             when (coin.currency) {

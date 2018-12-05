@@ -21,6 +21,10 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.text.DecimalFormat
 
+/**
+ * Fragment that handles banking for the user. That is putting coins into the bank and also
+ * exchanging coins that are already in the bank
+ */
 class BankFragment : Fragment(), View.OnClickListener {
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
@@ -40,10 +44,11 @@ class BankFragment : Fragment(), View.OnClickListener {
         // Inflate the layout for this fragment
         fragmentView = inflater.inflate(R.layout.fragment_bank, container, false)
 
+        // get a reference to the overall coins object
         val mainActivity = (activity as MainActivity)
-
         originalCoins = mainActivity.coins!!
 
+        // get all coins that are collected but not banked to display to the user
         collectedCoins = originalCoins.coins.filter {
             it.collected && !it.banked
         } as MutableList<Coin>
@@ -58,6 +63,7 @@ class BankFragment : Fragment(), View.OnClickListener {
             adapter = viewAdapter
         }
 
+        // set loading spinner whilst we get the user's bank from firestore
         mainActivity.animateProgressBarIn()
 
         fillRates()
@@ -67,7 +73,7 @@ class BankFragment : Fragment(), View.OnClickListener {
         fragmentView.findViewById<Button>(R.id.convertDolr).setOnClickListener(this)
         fragmentView.findViewById<Button>(R.id.convertShil).setOnClickListener(this)
 
-        val user = (activity as MainActivity).user!!
+        val user = mainActivity.user!!
         getOrCreateBank(user.uid, user.email!!) { bank ->
             this.bank = bank
             mainActivity.animateProgressBarOut()
@@ -76,6 +82,13 @@ class BankFragment : Fragment(), View.OnClickListener {
         return fragmentView
     }
 
+    /**
+     * Gets the exchange rates from the JSON stored in shared preferences
+     *
+     * Needed for exchanging coins based on today's rates
+     *
+     * TODO: Extract to helper function so can be shared with MainFragment
+     */
     private fun fillRates() {
         val sharedPrefs = activity?.getSharedPreferences(getString(R.string.preference_file_key),
                 Context.MODE_PRIVATE)
@@ -99,6 +112,9 @@ class BankFragment : Fragment(), View.OnClickListener {
         }
     }
 
+    /**
+     * Displays the user's bank balance
+     */
     private fun setBalanceLabels() {
         val format = DecimalFormat("####.##")
         fragmentView.findViewById<TextView>(R.id.shilAmount).text = format.format(bank.shilBalance)
@@ -108,6 +124,11 @@ class BankFragment : Fragment(), View.OnClickListener {
         fragmentView.findViewById<TextView>(R.id.goldAmount).text = format.format(bank.goldBalance)
     }
 
+    /**
+     * Banks a coin
+     *
+     * @param position Index into [collectedCoins] of the coin to bank
+     */
     private fun bankCoin(position: Int) {
         val coin = collectedCoins[position]
         // check number banked today
@@ -137,10 +158,18 @@ class BankFragment : Fragment(), View.OnClickListener {
 
         // refresh the adapter
         collectedCoins.removeAt(position)
-        // can't notifyItemRemoved because messes with existing callbacks
+        // can't notifyItemRemoved because need to rebind existing button callbacks
         viewAdapter.notifyDataSetChanged()
     }
 
+    /**
+     * Function to handle all button presses for the fragment
+     *
+     * By default button presses will go to the activity, but since [BankFragment] implements
+     * [View.OnClickListener] we can redirect presses to us using this function
+     *
+     * @param view The view that was clicked
+     */
     override fun onClick(view: View) {
         when (view.id) {
             R.id.convertDolr -> {

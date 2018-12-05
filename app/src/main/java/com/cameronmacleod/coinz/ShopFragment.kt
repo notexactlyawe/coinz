@@ -7,6 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
+/**
+ * Layout fragment for the feature that would be a shop allowing users to buy upgrades and traps
+ *
+ * No functionality
+ */
 class ShopFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,

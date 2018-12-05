@@ -31,9 +31,12 @@ import com.google.firebase.auth.FirebaseUser
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private lateinit var netHelper: NetHelper
     // public so fragments can use
+    // TODO: use a ViewModel to keep these
     var coins: Coins? = null
     var user: FirebaseUser? = null
+    // value returned in onRequestPermissionsResult
     private val REQUEST_LOCATION = 1
+    // used to track if we've explained to the user why we need the location permission
     private var shownLocationExplanationDialog = false
     private lateinit var progressOverlay: View
 
@@ -44,8 +47,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         netHelper = NetHelper(this)
 
+        // instantiates the ViewModel used to keep track of our user
         val mainViewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
         mainViewModel.user.observe(this, Observer { user ->
+            // when user is null, they've signed out so no need to update UI
             if (user != null) {
                 this.user = user
                 if (user.photoUrl == null) {
@@ -60,7 +65,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                 userEmail.text = user.email
 
-                // can force non-null because only use Google auth
+                // can force non-null because only use Google auth which ensures an email address
                 updateUser(user.uid, user.email!!)
             }
         })
@@ -70,6 +75,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
 
+        // Put a loading spinner over the main screen while we load the coins object
         progressOverlay = findViewById(R.id.progress_overlay)
         animateProgressBarIn()
 
@@ -87,6 +93,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         checkLocationPermission()
     }
 
+    /**
+     * Makes a spinner visible through an animation and disables interaction with the screen
+     */
     fun animateProgressBarIn() {
         val inAnimation = AlphaAnimation(0f, 1f)
         inAnimation.setDuration(200)
@@ -96,6 +105,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
+    /**
+     * Hides a spinner through an animation and enables interaction with the screen
+     */
     fun animateProgressBarOut() {
         val outAnimation = AlphaAnimation(1f, 0f)
         outAnimation.setDuration(200)
@@ -104,6 +116,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
+    /**
+     * Checks if the location permission has been granted. If not, shows an explanation and requests
+     * the permission.
+     */
     private fun checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -128,6 +144,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    /**
+     * Called when the user has either granted or denied the permission
+     */
     override fun onRequestPermissionsResult(requestCode: Int,
                                             permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
@@ -141,12 +160,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
                 return
             }
-            else -> {
-                // Ignore all other requests.
-            }
         }
     }
 
+    /**
+     * Fetches a coins object through asynchronous calls
+     */
     private fun fetchData() {
         netHelper.getJSONForDay(Calendar.getInstance().time) { response ->
             Log.d("FetchData response", response.toString())
@@ -166,6 +185,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    /**
+     * Fetches a Coins object from the database if it exists, else creates one
+     *
+     * Stores the Coins in [this.coins]
+     *
+     * @param json The GeoJSON to create the Coins object from if it doesn't already exist
+     */
     private fun retrieveOrCreateCoinsObject(json: String) {
         val db = FirebaseFirestore.getInstance()
 
@@ -192,6 +218,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
     }
 
+    /**
+     * Signs the user out when the sign out button is clicked
+     *
+     * @param view Unused, but needed to match signature of onClick
+     */
     fun onSignOutButtonClicked(view: View) {
         with (FirebaseAuth.getInstance()) {
             signOut()
@@ -200,19 +231,33 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         startActivity(intent)
     }
 
+    /**
+     * Takes the user to the shop when the "Go To Shop" button is clicked on MainFragment
+     *
+     * @param view Unused, but needed to match signature of onClick
+     */
     fun onShopButtonClicked(view: View) {
         nvView.setCheckedItem(R.id.nav_shop)
         onNavigationItemSelected(nvView.menu.findItem(R.id.nav_shop))
     }
 
+    /**
+     * Override to disable the back button
+     *
+     * If the back button was enabled then it would take the user back to the login screen which has
+     * a bug when the app is already open and it is started
+     */
     override fun onBackPressed() {
         if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
             drawer_layout.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
         }
     }
 
+    /**
+     * Handles click events for the navigation menu on the left.
+     *
+     * Main swapping point between fragments
+     */
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         val fragmentManager = supportFragmentManager
@@ -252,10 +297,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 }
 
+/**
+ * The ViewModel for the MainActivity. Currently only keeps track of the current [FirebaseUser]
+ */
 class MainViewModel: ViewModel() {
     val user = UserLiveData()
 }
 
+/**
+ * Observable object that tracks changes in the current [FirebaseUser]
+ */
 class UserLiveData: LiveData<FirebaseUser?>() {
     init {
         value = null

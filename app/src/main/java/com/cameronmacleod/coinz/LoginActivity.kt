@@ -13,6 +13,9 @@ import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
 import java.util.*
 
+/**
+ * The launch activity of the class, ensures user is logged in then passes along to MainActivity
+ */
 class LoginActivity : AppCompatActivity() {
 
     val RC_SIGN_IN = 1
@@ -24,12 +27,16 @@ class LoginActivity : AppCompatActivity() {
 
         val user = FirebaseAuth.getInstance().currentUser
 
+        // If the user is null then the activity will display and allow the user to log in
         if (user != null) {
-            Log.d("LoginActivity", "User ${user.email} already logged in")
+            Log.d(javaClass.simpleName, "User ${user.email} already logged in")
             redirectToMainScreen()
         }
     }
 
+    /**
+     * Function to handle login. Redirects to the Firebase login UI
+     */
     fun onLoginButtonClicked(view: View) {
         val providers = arrayListOf(AuthUI.IdpConfig.GoogleBuilder().build())
 
@@ -41,11 +48,17 @@ class LoginActivity : AppCompatActivity() {
                 RC_SIGN_IN)
     }
 
-    fun redirectToMainScreen() {
+    /**
+     * Convenience function to start the MainActivity
+     */
+    private fun redirectToMainScreen() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
     }
 
+    /**
+     * Called when the Firebase login UI returns. Checks if login worked and redirects appropriately
+     */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -55,7 +68,7 @@ class LoginActivity : AppCompatActivity() {
             if (resultCode == Activity.RESULT_OK) {
                 // Successfully signed in
                 val user = FirebaseAuth.getInstance().currentUser
-                Log.d("LoginActivity", "Successfully signed in ${user?.email}")
+                Log.d(javaClass.simpleName, "Successfully signed in ${user?.email}")
                 redirectToMainScreen()
             } else if (response != null) {
                 // if response was null, then user pressed the back button

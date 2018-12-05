@@ -12,6 +12,9 @@ import android.widget.EditText
 import android.widget.Toast
 import java.util.zip.Inflater
 
+/**
+ * A dialog that gets a user ID from an entered email. Does validation to ensure email exists
+ */
 class SendToFriendDialog : DialogFragment(), View.OnClickListener {
     private lateinit var mListener: NoticeDialogListener
     private lateinit var dialogView: View
@@ -20,7 +23,7 @@ class SendToFriendDialog : DialogFragment(), View.OnClickListener {
         fun onUserIDGottenClick(uid: String)
     }
 
-    // Override the Fragment.onAttach() method to instantiate the NoticeDialogListener
+    // Needed to get a reference to our attached fragment. We can then send events to it
     override fun onAttach(context: Context) {
         super.onAttach(context)
         // Verify that the host activity implements the callback interface
@@ -40,6 +43,7 @@ class SendToFriendDialog : DialogFragment(), View.OnClickListener {
             val builder = AlertDialog.Builder(it)
 
             dialogView = activity!!.layoutInflater.inflate(R.layout.fragment_send_friend_dialog, null)
+            // We need to be our own onClick listener to not get dismissed when a button is pressed
             dialogView.findViewById<Button>(R.id.cancel_button).setOnClickListener(this)
             dialogView.findViewById<Button>(R.id.send_button).setOnClickListener(this)
 
@@ -50,6 +54,9 @@ class SendToFriendDialog : DialogFragment(), View.OnClickListener {
         } ?: throw IllegalStateException("Activity cannot be null")
     }
 
+    /**
+     * Handles the cancel and send buttons.
+     */
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.send_button -> {
@@ -61,11 +68,13 @@ class SendToFriendDialog : DialogFragment(), View.OnClickListener {
                                 R.string.no_friend_found, Toast.LENGTH_SHORT)
                         toast.show()
                     } else {
+                        // we got a valid email and the user ID for it
                         dialog.dismiss()
                         mListener.onUserIDGottenClick(uid)
                     }
                 }
             }
+            // dismiss dialog on cancel
             R.id.cancel_button -> dialog.cancel()
         }
     }

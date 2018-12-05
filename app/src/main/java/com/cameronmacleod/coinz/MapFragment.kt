@@ -23,8 +23,12 @@ import android.support.v4.content.ContextCompat
 import android.widget.Toast
 import com.mapbox.mapboxsdk.maps.MapboxMap
 
+/**
+ * Fragment that displays a map with the coins and the user's location
+ */
 class MapFragment : Fragment() {
     private lateinit var mapView: MapView
+    // Avoid re-generating bitmaps by keeping a reference to them
     private lateinit var dolrBitmap: Bitmap
     private lateinit var shilBitmap: Bitmap
     private lateinit var quidBitmap: Bitmap
@@ -99,10 +103,12 @@ class MapFragment : Fragment() {
             mapView = nonNullActivity.findViewById(R.id.mapView) as MapView
             mapView.onCreate(savedInstanceState)
 
+            // Wait for map to be loaded
             mapView.getMapAsync { mapboxMap ->
                 this.map = mapboxMap
                 try {
                     val parent = activity as MainActivity
+                    // for every coin create a marker and add it
                     parent.coins?.coins?.forEach { coin ->
                         val m = MarkerOptions().apply {
                             position = LatLng(coin.latitude, coin.longitude)
@@ -113,6 +119,7 @@ class MapFragment : Fragment() {
                         mapboxMap.addMarker(m)
                     }
 
+                    // enable showing of user location on map
                     val locationComponent = mapboxMap?.locationComponent
                     try {
                         locationComponent?.activateLocationComponent(activity!!)
@@ -127,7 +134,13 @@ class MapFragment : Fragment() {
         }
     }
 
-    fun collectNearbyCoins(location: Location, coins: Coins) {
+    /**
+     * Checks if there are nearby coins and collects them
+     *
+     * @param location The user's location
+     * @param coins The list of coins to collect from
+     */
+    private fun collectNearbyCoins(location: Location, coins: Coins) {
         if (coins.getNumCollected() > 24) {
             val toast = Toast.makeText(activity, "Can't collect any more coinz today!",
                     Toast.LENGTH_SHORT)
@@ -135,8 +148,10 @@ class MapFragment : Fragment() {
             return
         }
 
+        // we only want to make a db call if we have updated coins to save bandwidth
         var coinsUpdated = false
         coins.coins.filter {
+            // get all coins that are nearer than 25 metres and that aren't collected
             (location.distanceTo(it.getLocation()) < 25) && !it.collected
         }.forEach {
             it.collect()
@@ -150,7 +165,10 @@ class MapFragment : Fragment() {
         }
     }
 
-    fun refreshMap() {
+    /**
+     * Removes and re-adds all markers on the map
+     */
+    private fun refreshMap() {
         if (map == null || activity == null) {
             return
         }
@@ -170,9 +188,16 @@ class MapFragment : Fragment() {
         }
     }
 
-    fun getIcon(collected: Boolean, currency: String): Icon {
+    /**
+     * Gets an icon to display on the map for a coin
+     *
+     * @param collected Whether the coin has been collected
+     * @param currency The currency of the coin
+     * @return An [Icon] to represent the coin
+     */
+    private fun getIcon(collected: Boolean, currency: String): Icon {
         val icon = IconFactory.getInstance(activity!!)
-        var bitmap: Bitmap?
+        val bitmap: Bitmap?
         if (collected) {
             bitmap = collBitmap
             return icon.fromBitmap(bitmap)
@@ -189,18 +214,26 @@ class MapFragment : Fragment() {
         return icon.fromBitmap(bitmap)
     }
 
-    fun getBitmapFromVectorDrawable(context: Context, drawableId: Int): Bitmap {
-        var drawable = ContextCompat.getDrawable(context, drawableId)!!
+    /**
+     * Gets a bitmap from a drawable resource
+     *
+     * @param context The application context
+     * @param drawableId The resource to convert
+     * @return A bitmap of size (100, 100) from [drawableId]
+     */
+    private fun getBitmapFromVectorDrawable(context: Context, drawableId: Int): Bitmap {
+        val drawable = ContextCompat.getDrawable(context, drawableId)!!
 
         val bitmap = Bitmap.createBitmap(100,
                 100, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight())
+        drawable.setBounds(0, 0, canvas.width, canvas.height)
         drawable.draw(canvas)
 
         return bitmap
     }
 
+    // Below functions are needed for the map to track lifecycle changes
     override fun onStart() {
         super.onStart()
         mapView.onStart()
