@@ -23,3 +23,6 @@ https://stackoverflow.com/questions/18021148/display-a-loading-overlay-on-androi
 https://stackoverflow.com/questions/36918219/how-to-disable-user-interaction-while-progressbar-is-visible-in-android
 https://stackoverflow.com/questions/29451768/recyclerview-bind-the-view-holders-again
 https://developer.android.com/guide/topics/ui/dialogs
+https://stackoverflow.com/questions/34259335/npe-while-inflating-layout-attempt-to-invoke-virtual-method-boolean-java-lang
+https://developer.android.com/topic/libraries/architecture/livedata
+https://medium.com/androiddevelopers/lifecycle-aware-data-loading-with-android-architecture-components-f95484159de4
