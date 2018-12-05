@@ -31,7 +31,7 @@ data class Coin(var coinId: String = "",
     }
 
     fun isCollectable(user: Location): Boolean {
-        if (!collected && getLocation().distanceTo(user) < 5) {
+        if (!collected && getLocation().distanceTo(user) < 25) {
             return true
         }
         return false

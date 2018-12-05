@@ -137,14 +137,8 @@ class MapFragment : Fragment() {
 
         var coinsUpdated = false
         coins.coins.filter {
-            (location.distanceTo(it.getLocation()) < 5) && !it.collected
+            (location.distanceTo(it.getLocation()) < 25) && !it.collected
         }.forEach {
-            if (coins.getNumCollected() > 24) {
-                val toast = Toast.makeText(activity, R.string.coin_limit_reached_text,
-                        Toast.LENGTH_SHORT)
-                toast.show()
-                return
-            }
             it.collect()
             val toast = Toast.makeText(activity, R.string.coin_collected_text, Toast.LENGTH_SHORT)
             toast.show()

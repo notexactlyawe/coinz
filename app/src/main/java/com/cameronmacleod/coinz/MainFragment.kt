@@ -219,13 +219,6 @@ class MainFragment : Fragment(), View.OnClickListener {
             return
         }
 
-        if (coins.getNumCollected() > 24) {
-            val toast = Toast.makeText(activity!!, R.string.coin_limit_reached_text,
-                    Toast.LENGTH_SHORT)
-            toast.show()
-            return
-        }
-
         if (coins.collectCoinById(coinId, currLocation!!)) {
             // update list
             fillFourNearestCoins()
