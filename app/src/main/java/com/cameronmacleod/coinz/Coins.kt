@@ -7,6 +7,11 @@ import com.mapbox.geojson.Point
 import java.text.SimpleDateFormat
 import java.util.*
 
+// Convenience function to get the name of a Coins object
+fun getCoinsName(userId: String, date: String): String {
+    return "$userId:$date"
+}
+
 /**
  * Serializable (to Firestore) class that represents a coin on the map
  */
@@ -64,7 +69,7 @@ data class Coin(var coinId: String = "",
 data class Coins(var coins: List<Coin> = listOf(),
                  var userId: String = "",
                  var date: String = "") {
-    val name = "$userId:$date"
+    val name = getCoinsName(userId, date)
 
     /**
      * Returns the number of collected coins within the [coins] list

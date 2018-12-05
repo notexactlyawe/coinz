@@ -180,42 +180,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             if (user?.uid == null) {
                 Log.e(javaClass.simpleName, "User ID was null, can't access user data")
             } else {
-                retrieveOrCreateCoinsObject(response.toString())
+                getOrCreateCoinsObject(user!!.uid, Calendar.getInstance().time,
+                        response.toString()) {
+                    this.coins = it
+                    animateProgressBarOut()
+                }
             }
         }
-    }
-
-    /**
-     * Fetches a Coins object from the database if it exists, else creates one
-     *
-     * Stores the Coins in [this.coins]
-     *
-     * @param json The GeoJSON to create the Coins object from if it doesn't already exist
-     */
-    private fun retrieveOrCreateCoinsObject(json: String) {
-        val db = FirebaseFirestore.getInstance()
-
-        val userCoinz = Coins.fromJson(json, user!!.uid, Calendar.getInstance().time)
-
-        db.collection("usersToCoinz").document(userCoinz.name).get()
-                .addOnCompleteListener { task ->
-                    if (!task.isSuccessful || !task.result!!.exists()) {
-                        coins = userCoinz
-                        updateUsersToCoinz(userCoinz)
-                    } else {
-                        Log.d("FireStore", "result: ${task.result}")
-                        coins = task.result?.toObject(Coins::class.java)!!
-                        Log.d(javaClass.simpleName, coins.toString())
-                        Log.d(javaClass.simpleName, coins?.coins?.get(0).toString())
-                    }
-                    animateProgressBarOut()
-                }
-                .addOnFailureListener {
-                    Log.d("FireStore", "Couldn't get ${userCoinz.name} from db\n$it")
-                    coins = userCoinz
-                    updateUsersToCoinz(userCoinz)
-                    animateProgressBarOut()
-                }
     }
 
     /**

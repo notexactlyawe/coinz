@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import java.util.*
 
 /**
  * Fragment that enables users to send spare change or coins that they haven't yet
@@ -24,6 +25,7 @@ class SendCoinzFragment : Fragment(), SendToFriendDialog.NoticeDialogListener {
     private lateinit var collectedCoins: MutableList<Coin>
     private lateinit var originalCoins: Coins
     private lateinit var fragmentView: View
+    // index into collectedCoins
     private var selectedCoinIndex: Int? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -85,29 +87,31 @@ class SendCoinzFragment : Fragment(), SendToFriendDialog.NoticeDialogListener {
         // copy in case another coin sent in mean time
         val copyOfIndex = selectedCoinIndex as Int
 
-        // get their bank to edit it
-        getOrCreateBank(uid) { theirBank ->
-            val coin = collectedCoins[copyOfIndex]
-            when (coin.currency) {
-                "DOLR" -> theirBank.dolrBalance += coin.amount
-                "SHIL" -> theirBank.shilBalance += coin.amount
-                "PENY" -> theirBank.penyBalance += coin.amount
-                "QUID" -> theirBank.quidBalance += coin.amount
+        // get their coinz to edit it
+        getCoinsObject(uid, Calendar.getInstance().time) {
+            if (it == null) {
+                Log.e(javaClass.simpleName, "Their coins object was null")
+                val toast = Toast.makeText(activity, "Something went wrong, please try again later", Toast.LENGTH_SHORT)
+                toast.show()
+            } else {
+                val coin = collectedCoins[copyOfIndex]
+                // collect with the coin's location to ensure we are nearby
+                it.collectCoinById(coin.coinId, coin.getLocation())
+                // WARNING: there are no locks around the db so we could have a race condition
+                updateUsersToCoinz(it)
+
+                // update our coin
+                coin.banked = true
+                updateUsersToCoinz(originalCoins)
+
+                // update adapter dataset
+                collectedCoins.removeAt(copyOfIndex)
+                viewAdapter.notifyDataSetChanged()
+
+                // notify user
+                val toast = Toast.makeText(activity, R.string.coin_send_success, Toast.LENGTH_SHORT)
+                toast.show()
             }
-            // WARNING: there are no locks around a 'bank' so we could have a race condition
-            updateBank(theirBank)
-
-            // update our coin
-            coin.banked = true
-            updateUsersToCoinz(originalCoins)
-
-            // update adapter dataset
-            collectedCoins.removeAt(copyOfIndex)
-            viewAdapter.notifyDataSetChanged()
-
-            // notify user
-            val toast = Toast.makeText(activity, R.string.coin_send_success, Toast.LENGTH_SHORT)
-            toast.show()
         }
     }
 }
