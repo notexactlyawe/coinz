@@ -94,6 +94,7 @@ class SendCoinzFragment : Fragment(), SendToFriendDialog.NoticeDialogListener {
 
             // update our coin
             coin.banked = true
+            updateUsersToCoinz(originalCoins)
 
             // update adapter dataset
             collectedCoins.removeAt(copyOfIndex)
