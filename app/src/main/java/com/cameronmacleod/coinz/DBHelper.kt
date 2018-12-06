@@ -68,7 +68,9 @@ fun getOrCreateCoinsObject(userID: String, date: Date, json: String, callback: (
         if (coins != null) {
             callback(coins)
         } else {
-            callback(Coins.fromJson(json, userID, date))
+            val newCoins = Coins.fromJson(json, userID, date)
+            updateUsersToCoinz(newCoins)
+            callback(newCoins)
         }
     }
 }
