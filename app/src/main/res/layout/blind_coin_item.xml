@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/imgCoinIcon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:srcCompat="@drawable/ic_quid" />
+
+    <TextView
+        android:id="@+id/coinType"
+        android:layout_width="53dp"
+        android:layout_height="match_parent"
+        android:gravity="end|center_vertical"
+        android:text="QUID"
+        android:textAlignment="center" />
+
+    <TextView
+        android:id="@+id/coinValue"
+        android:layout_width="49dp"
+        android:layout_height="match_parent"
+        android:gravity="start|center_vertical"
+        android:text="5" />
+
+    <TextView
+        android:id="@+id/coinDistance"
+        android:layout_width="84dp"
+        android:layout_height="match_parent"
+        android:gravity="end|center_vertical"
+        android:text="100 Metres" />
+
+    <TextView
+        android:id="@+id/coinDirection"
+        android:layout_width="44dp"
+        android:layout_height="match_parent"
+        android:gravity="end|center_vertical"
+        android:text="East" />
+
+</LinearLayout>
