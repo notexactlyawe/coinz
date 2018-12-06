@@ -36,7 +36,9 @@ class LoginActivity : AppCompatActivity() {
      * Function to handle login. Redirects to the Firebase login UI
      */
     fun onLoginButtonClicked(@Suppress("UNUSED_PARAMETER")view: View) {
-        val providers = arrayListOf(AuthUI.IdpConfig.GoogleBuilder().build())
+        val providers = arrayListOf(
+                AuthUI.IdpConfig.EmailBuilder().build(),
+                AuthUI.IdpConfig.GoogleBuilder().build())
 
         startActivityForResult(
                 AuthUI.getInstance()
