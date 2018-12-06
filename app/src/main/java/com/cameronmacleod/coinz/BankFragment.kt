@@ -125,7 +125,12 @@ class BankFragment : Fragment(), View.OnClickListener {
     private fun bankCoin(position: Int) {
         val coin = collectedCoins[position]
         // check number banked today
-        if (collectedCoins.filter { it.banked }.size > 24) {
+
+        val numBankedCoins = originalCoins.coins.filter { it.banked }.size
+
+        Log.d(javaClass.simpleName, "In bankCoin, number of banked coins $numBankedCoins")
+
+        if (numBankedCoins > 24) {
             val toast = Toast.makeText(activity, "Already banked 25 coins today!", Toast.LENGTH_SHORT)
             toast.show()
             return

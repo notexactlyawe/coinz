@@ -132,13 +132,6 @@ class MapFragment : Fragment() {
      * @param coins The list of coins to collect from
      */
     private fun collectNearbyCoins(location: Location, coins: Coins) {
-        if (coins.getNumCollected() > 24) {
-            val toast = Toast.makeText(activity, "Can't collect any more coinz today!",
-                    Toast.LENGTH_SHORT)
-            toast.show()
-            return
-        }
-
         // we only want to make a db call if we have updated coins to save bandwidth
         var coinsUpdated = false
         coins.coins.filter {
