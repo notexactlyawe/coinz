@@ -47,7 +47,7 @@ class SendCoinzFragment : Fragment(), SendToFriendDialog.NoticeDialogListener {
 
         // Initialise the RecyclerView that displays the coins to send
         viewManager = LinearLayoutManager(activity)
-        viewAdapter = CollectedCoinsAdapter(collectedCoins) {
+        viewAdapter = CollectedCoinsAdapter(collectedCoins, "SEND") {
             Log.d("Button clicked", "position was $it")
             selectedCoinIndex = it
             val emailDialog = SendToFriendDialog()

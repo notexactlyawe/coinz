@@ -50,7 +50,7 @@ class BankFragment : Fragment(), View.OnClickListener {
         } as MutableList<Coin>
 
         viewManager = LinearLayoutManager(activity)
-        viewAdapter = CollectedCoinsAdapter(collectedCoins, ::bankCoin)
+        viewAdapter = CollectedCoinsAdapter(collectedCoins, "BANK", ::bankCoin)
 
         recyclerView = fragmentView.findViewById<RecyclerView>(R.id.collectedCoinsList).apply {
             // improves performance since each element is same size

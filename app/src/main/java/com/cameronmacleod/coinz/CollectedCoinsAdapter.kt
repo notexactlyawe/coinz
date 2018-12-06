@@ -15,7 +15,9 @@ import android.widget.TextView
  * @property callback A function called whenever a [R.id.collectedActionButton] is pressed, takes
  *  an integer which is the index into [coins] for which coin was clicked
  */
-class CollectedCoinsAdapter(private val coins: MutableList<Coin>, val callback: (Int) -> Unit) :
+class CollectedCoinsAdapter(private val coins: MutableList<Coin>,
+                            private val buttonText: String,
+                            val callback: (Int) -> Unit) :
         RecyclerView.Adapter<CollectedCoinsAdapter.MyViewHolder>() {
 
     // A map from currency strings to drawable icons representing them
@@ -51,6 +53,7 @@ class CollectedCoinsAdapter(private val coins: MutableList<Coin>, val callback: 
         holder.view.findViewById<Button>(R.id.collectedActionButton).setOnClickListener {
             callback(position)
         }
+        holder.view.findViewById<Button>(R.id.collectedActionButton).text = buttonText
     }
 
     override fun getItemCount() = coins.size
