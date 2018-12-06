@@ -26,3 +26,4 @@ https://developer.android.com/guide/topics/ui/dialogs
 https://stackoverflow.com/questions/34259335/npe-while-inflating-layout-attempt-to-invoke-virtual-method-boolean-java-lang
 https://developer.android.com/topic/libraries/architecture/livedata
 https://medium.com/androiddevelopers/lifecycle-aware-data-loading-with-android-architecture-components-f95484159de4
+https://stackoverflow.com/questions/33194594/navigationview-get-find-header-layout

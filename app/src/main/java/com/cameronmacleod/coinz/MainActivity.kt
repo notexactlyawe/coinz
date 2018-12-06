@@ -15,6 +15,7 @@ import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.util.AttributeSet
 import android.util.Log
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
@@ -25,6 +26,8 @@ import kotlinx.android.synthetic.main.toolbar.*
 import java.util.*
 import android.view.animation.AlphaAnimation
 import android.view.*
+import android.widget.ImageView
+import android.widget.TextView
 import com.google.firebase.auth.FirebaseUser
 
 
@@ -39,6 +42,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     // used to track if we've explained to the user why we need the location permission
     private var shownLocationExplanationDialog = false
     private lateinit var progressOverlay: View
+    private lateinit var userProfilePic: ImageView
+    private lateinit var userEmail: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +51,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setSupportActionBar(toolbar)
 
         netHelper = NetHelper(this)
+
+        userProfilePic = nvView.getHeaderView(0).findViewById(R.id.userProfilePic)
+        userEmail = nvView.getHeaderView(0).findViewById(R.id.userEmail)
 
         // instantiates the ViewModel used to keep track of our user
         val mainViewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
