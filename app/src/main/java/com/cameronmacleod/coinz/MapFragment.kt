@@ -35,6 +35,8 @@ class MapFragment : Fragment() {
     private lateinit var penyBitmap: Bitmap
     private lateinit var collBitmap: Bitmap
     private var map: MapboxMap? = null
+    private lateinit var locationListener: LocationListener
+    private lateinit var locationManager: LocationManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,10 +52,10 @@ class MapFragment : Fragment() {
             collBitmap = getBitmapFromVectorDrawable(nonNullActivity, R.drawable.ic_coinz_24dp)
 
             // Acquire a reference to the system Location Manager
-            val locationManager = nonNullActivity.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            locationManager = nonNullActivity.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
             // Define a listener that responds to location updates
-            val locationListener = object : LocationListener {
+            locationListener = object : LocationListener {
 
                 override fun onLocationChanged(location: Location) {
                     // Called when a new location is found by the network location provider.
@@ -74,17 +76,6 @@ class MapFragment : Fragment() {
 
                 override fun onProviderDisabled(provider: String) {
                 }
-            }
-
-            try {
-                // Register the listener with the Location Manager to receive location updates
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0f, locationListener)
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0f, locationListener)
-            } catch (e: SecurityException) {
-                // user hasn't enabled location
-                Log.e(this.javaClass.simpleName, "User hasn't enabled location: $e")
-                val toast = Toast.makeText(nonNullActivity, "Please enable location", Toast.LENGTH_LONG)
-                toast.show()
             }
         }
     }
@@ -155,7 +146,7 @@ class MapFragment : Fragment() {
             (location.distanceTo(it.getLocation()) < 25) && !it.collected
         }.forEach {
             it.collect()
-            val toast = Toast.makeText(activity, R.string.coin_collected_text, Toast.LENGTH_SHORT)
+            val toast = Toast.makeText(activity, getString(R.string.coin_collected_text), Toast.LENGTH_SHORT)
             toast.show()
             coinsUpdated = true
         }
@@ -242,11 +233,24 @@ class MapFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         mapView.onResume()
+
+        try {
+            // Register the listener with the Location Manager to receive location updates
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0f, locationListener)
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0f, locationListener)
+        } catch (e: SecurityException) {
+            // user hasn't enabled location
+            Log.e(this.javaClass.simpleName, "User hasn't enabled location: $e")
+            val toast = Toast.makeText(activity, "Please enable location", Toast.LENGTH_LONG)
+            toast.show()
+        }
     }
 
     override fun onPause() {
         super.onPause()
         mapView.onPause()
+
+        locationManager.removeUpdates(locationListener)
     }
 
     override fun onStop() {
