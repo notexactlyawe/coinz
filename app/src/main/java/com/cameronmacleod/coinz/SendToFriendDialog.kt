@@ -3,14 +3,12 @@ package com.cameronmacleod.coinz
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
-import android.content.DialogInterface
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import java.util.zip.Inflater
 
 /**
  * A dialog that gets a user ID from an entered email. Does validation to ensure email exists

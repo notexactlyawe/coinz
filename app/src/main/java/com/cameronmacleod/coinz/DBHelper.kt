@@ -15,7 +15,7 @@ fun updateUsersToCoinz(coins: Coins) {
     val db = FirebaseFirestore.getInstance()
     db.collection("usersToCoinz")
             .document(coins.name).set(coins)
-            .addOnSuccessListener { reference ->
+            .addOnSuccessListener { _ ->
                 Log.d("FireStore",
                         "Document snapshot added with ID ${coins.name}")
             }
@@ -34,7 +34,7 @@ fun updateUsersToCoinz(coins: Coins) {
 fun getCoinsObject(userId: String, date: Date, callback: (Coins?) -> Unit) {
     val db = FirebaseFirestore.getInstance()
 
-    val dateString = SimpleDateFormat("yyyy.MM.dd").format(date)
+    val dateString = SimpleDateFormat("yyyy.MM.dd", Locale.UK).format(date)
 
     val name = getCoinsName(userId, dateString)
 
@@ -49,7 +49,7 @@ fun getCoinsObject(userId: String, date: Date, callback: (Coins?) -> Unit) {
                 }
             }
             .addOnFailureListener {
-                Log.d("FireStore", "Couldn't get ${name} from db\n$it")
+                Log.d("FireStore", "Couldn't get $name from db\n$it")
                 callback(null)
             }
 }
@@ -58,7 +58,7 @@ fun getCoinsObject(userId: String, date: Date, callback: (Coins?) -> Unit) {
  * Convenience function that wraps [getCoinsObject] and returns a fresh Coins object if it
  * doesn't already exist
  *
- * @param userId ID of the user to get the object for
+ * @param userID ID of the user to get the object for
  * @param date Date to fetch the object for
  * @param json The GeoJSON to create the object from
  * @param callback Called when the object is gotten or otherwise
@@ -82,7 +82,7 @@ fun updateBank(bank: Bank) {
     val db = FirebaseFirestore.getInstance()
     db.collection("bank")
             .document(bank.name).set(bank)
-            .addOnSuccessListener { reference ->
+            .addOnSuccessListener { _ ->
                 Log.d("FireStore",
                         "Document snapshot added with ID ${bank.name}")
             }
@@ -153,7 +153,7 @@ fun updateUser(userID: String, email: String) {
     val db = FirebaseFirestore.getInstance()
     db.collection("user")
             .document(email).set(data)
-            .addOnSuccessListener { reference ->
+            .addOnSuccessListener { _ ->
                 Log.d("FireStore",
                         "User added or updated with ID $userID")
             }

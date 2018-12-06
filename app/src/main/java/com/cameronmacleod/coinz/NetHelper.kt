@@ -28,7 +28,7 @@ class NetHelper(context: Context) {
      * @param onSuccess Function called when the file is successfully retrieved
      */
     fun getJSONForDay(day: Date, onSuccess: (JSONObject)->Unit) {
-        val format = SimpleDateFormat("yyyy/MM/dd/")
+        val format = SimpleDateFormat("yyyy/MM/dd/", Locale.UK)
         val url = rootUrl + format.format(day) + fileName
 
         val jsonObjectRequest = JsonObjectRequest(Request.Method.GET, url, null,

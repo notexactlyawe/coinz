@@ -37,7 +37,7 @@ data class Coin(var coinId: String = "",
      * Convenience toString for debugging purposes
      */
     override fun toString(): String {
-        return "${coinId}, ${latitude}, ${longitude}, ${currency}, ${amount}, ${collected}"
+        return "$coinId, $latitude, $longitude, $currency, $amount, $collected"
     }
 
     /**
@@ -106,7 +106,7 @@ data class Coins(var coins: List<Coin> = listOf(),
      * Convenience toString for debugging
      */
     override fun toString(): String {
-        return "${coins.size} coins. User: ${userId}, date: {$date}"
+        return "${coins.size} coins. User: $userId, date: $date"
     }
 
     /**
@@ -124,7 +124,7 @@ data class Coins(var coins: List<Coin> = listOf(),
          * @returns A [Coins] object
          */
         fun fromJson(json: String, userId: String, date: Date): Coins {
-            val dateString = SimpleDateFormat("yyyy.MM.dd").format(date)
+            val dateString = SimpleDateFormat("yyyy.MM.dd", Locale.UK).format(date)
             val features = FeatureCollection.fromJson(json).features()
             if (features == null) {
                 Log.e(this::class.java.simpleName, "No features in GeoJSON when creating list of coinz")

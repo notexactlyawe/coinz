@@ -1,7 +1,6 @@
 package com.cameronmacleod.coinz
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -11,14 +10,13 @@ import android.widget.Toast
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
-import java.util.*
+
+const val RC_SIGN_IN = 1
 
 /**
  * The launch activity of the class, ensures user is logged in then passes along to MainActivity
  */
 class LoginActivity : AppCompatActivity() {
-
-    val RC_SIGN_IN = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +35,7 @@ class LoginActivity : AppCompatActivity() {
     /**
      * Function to handle login. Redirects to the Firebase login UI
      */
-    fun onLoginButtonClicked(view: View) {
+    fun onLoginButtonClicked(@Suppress("UNUSED_PARAMETER")view: View) {
         val providers = arrayListOf(AuthUI.IdpConfig.GoogleBuilder().build())
 
         startActivityForResult(

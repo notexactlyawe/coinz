@@ -10,13 +10,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
-import android.view.animation.AlphaAnimation
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import com.google.firebase.firestore.FirebaseFirestore
 import org.json.JSONException
 import org.json.JSONObject
 import java.text.DecimalFormat
@@ -91,10 +87,7 @@ class BankFragment : Fragment(), View.OnClickListener {
      */
     private fun fillRates() {
         val sharedPrefs = activity?.getSharedPreferences(getString(R.string.preference_file_key),
-                Context.MODE_PRIVATE)
-        if (sharedPrefs == null) {
-            return
-        }
+                Context.MODE_PRIVATE) ?: return
         val geojsonStr = sharedPrefs.getString(getString(R.string.coinz_map_key), "")
         val geojson = JSONObject(geojsonStr)
 

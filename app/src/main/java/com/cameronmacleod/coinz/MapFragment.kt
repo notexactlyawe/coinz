@@ -193,13 +193,13 @@ class MapFragment : Fragment() {
             bitmap = collBitmap
             return icon.fromBitmap(bitmap)
         }
-        when (currency) {
-            "SHIL" -> bitmap = shilBitmap
-            "QUID" -> bitmap = quidBitmap
-            "DOLR" -> bitmap = dolrBitmap
-            "PENY" -> bitmap = penyBitmap
+        bitmap = when (currency) {
+            "SHIL" -> shilBitmap
+            "QUID" -> quidBitmap
+            "DOLR" -> dolrBitmap
+            "PENY" -> penyBitmap
             else -> {
-                bitmap = collBitmap
+                collBitmap
             }
         }
         return icon.fromBitmap(bitmap)

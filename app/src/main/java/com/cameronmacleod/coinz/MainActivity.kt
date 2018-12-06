@@ -15,13 +15,10 @@ import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
-import android.util.AttributeSet
 import android.util.Log
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.nav_header_main.*
 import kotlinx.android.synthetic.main.toolbar.*
 import java.util.*
 import android.view.animation.AlphaAnimation
@@ -30,6 +27,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.google.firebase.auth.FirebaseUser
 
+// value returned in onRequestPermissionsResult
+const val REQUEST_LOCATION = 1
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private lateinit var netHelper: NetHelper
@@ -37,8 +36,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     // TODO: use a ViewModel to keep these
     var coins: Coins? = null
     var user: FirebaseUser? = null
-    // value returned in onRequestPermissionsResult
-    private val REQUEST_LOCATION = 1
     // used to track if we've explained to the user why we need the location permission
     private var shownLocationExplanationDialog = false
     private lateinit var progressOverlay: View
@@ -106,9 +103,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
      */
     fun animateProgressBarIn() {
         val inAnimation = AlphaAnimation(0f, 1f)
-        inAnimation.setDuration(200)
-        progressOverlay.setAnimation(inAnimation)
-        progressOverlay.setVisibility(View.VISIBLE)
+        inAnimation.duration = 200
+        progressOverlay.animation = inAnimation
+        progressOverlay.visibility = View.VISIBLE
         window.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
@@ -118,9 +115,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
      */
     fun animateProgressBarOut() {
         val outAnimation = AlphaAnimation(1f, 0f)
-        outAnimation.setDuration(200)
-        progressOverlay.setAnimation(outAnimation)
-        progressOverlay.setVisibility(View.GONE)
+        outAnimation.duration = 200
+        progressOverlay.animation = outAnimation
+        progressOverlay.visibility = View.GONE
         window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
     }
 
@@ -137,7 +134,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 val dialog = AlertDialog.Builder(this).apply {
                     setMessage(R.string.location_explanation)
                     setTitle("Location Permission")
-                    setNeutralButton("OK") { result, something ->
+                    setNeutralButton("OK") { _, _ ->
                         checkLocationPermission()
                     }
                 }
@@ -202,7 +199,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
      *
      * @param view Unused, but needed to match signature of onClick
      */
-    fun onSignOutButtonClicked(view: View) {
+    fun onSignOutButtonClicked(@Suppress("UNUSED_PARAMETER")view: View) {
         with (FirebaseAuth.getInstance()) {
             signOut()
         }
@@ -215,7 +212,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
      *
      * @param view Unused, but needed to match signature of onClick
      */
-    fun onShopButtonClicked(view: View) {
+    fun onShopButtonClicked(@Suppress("UNUSED_PARAMETER")view: View) {
         nvView.setCheckedItem(R.id.nav_shop)
         onNavigationItemSelected(nvView.menu.findItem(R.id.nav_shop))
     }
@@ -260,7 +257,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 fragmentTransaction.replace(R.id.flContent, fragment)
             }
             R.id.nav_leaderboard -> {
-                val fragment = LeaderboardFragment()
+                val fragment = LeaderBoardFragment()
                 fragmentTransaction.replace(R.id.flContent, fragment)
             }
             R.id.nav_map -> {

@@ -14,9 +14,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TableRow
 import android.widget.Toast
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.FeatureCollection
-import com.mapbox.geojson.Point
 import kotlinx.android.synthetic.main.content_main.*
 import org.json.JSONException
 import org.json.JSONObject
@@ -101,10 +98,7 @@ class MainFragment : Fragment(), View.OnClickListener {
      */
     private fun fillRates() {
         val sharedPrefs = activity?.getSharedPreferences(getString(R.string.preference_file_key),
-                Context.MODE_PRIVATE)
-        if (sharedPrefs == null) {
-            return
-        }
+                Context.MODE_PRIVATE) ?: return
         val geojsonStr = sharedPrefs.getString(getString(R.string.coinz_map_key), "")
 
         if (geojsonStr == "") {
@@ -215,14 +209,11 @@ class MainFragment : Fragment(), View.OnClickListener {
      * Listens to click events for the four nearest coins
      */
     override fun onClick(view: View) {
-        if (view == coinRow1) {
-            collectCoin(topFourCoins[0])
-        } else if (view == coinRow2) {
-            collectCoin(topFourCoins[1])
-        } else if (view == coinRow3) {
-            collectCoin(topFourCoins[2])
-        } else if (view == coinRow4) {
-            collectCoin(topFourCoins[3])
+        when (view) {
+            coinRow1 -> collectCoin(topFourCoins[0])
+            coinRow2 -> collectCoin(topFourCoins[1])
+            coinRow3 -> collectCoin(topFourCoins[2])
+            coinRow4 -> collectCoin(topFourCoins[3])
         }
     }
 
@@ -275,16 +266,16 @@ class MainFragment : Fragment(), View.OnClickListener {
 
         val bearingDegrees = loc.bearingTo(coin.getLocation())
 
-        when {
-            bearingDegrees < 22.5  -> return "N"
-            bearingDegrees < 67.5  -> return "NE"
-            bearingDegrees < 112.5 -> return "E"
-            bearingDegrees < 157.5 -> return "SE"
-            bearingDegrees < 202.5 -> return "S"
-            bearingDegrees < 247.5 -> return "SW"
-            bearingDegrees < 292.5 -> return "W"
-            bearingDegrees < 337.5 -> return "NW"
-            else -> return "N"
+        return when {
+            bearingDegrees < 22.5  -> "N"
+            bearingDegrees < 67.5  -> "NE"
+            bearingDegrees < 112.5 -> "E"
+            bearingDegrees < 157.5 -> "SE"
+            bearingDegrees < 202.5 -> "S"
+            bearingDegrees < 247.5 -> "SW"
+            bearingDegrees < 292.5 -> "W"
+            bearingDegrees < 337.5 -> "NW"
+            else -> "N"
         }
     }
 }
