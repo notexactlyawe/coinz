@@ -47,6 +47,7 @@ class CollectedCoinsAdapter(private val coins: MutableList<Coin>, val callback: 
                 .setImageResource(stringIconMap.getOrDefault(coin.currency, R.drawable.ic_coinz_24dp))
         holder.view.findViewById<TextView>(R.id.coinType).text = coin.currency
         holder.view.findViewById<TextView>(R.id.coinValue).text = coin.amount.toString()
+        holder.view.findViewById<TextView>(R.id.receivedIndicator).text = if (coin.received) "R" else " "
         holder.view.findViewById<Button>(R.id.collectedActionButton).setOnClickListener {
             callback(position)
         }

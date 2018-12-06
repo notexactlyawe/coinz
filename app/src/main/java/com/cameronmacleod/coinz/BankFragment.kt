@@ -130,7 +130,7 @@ class BankFragment : Fragment(), View.OnClickListener {
 
         Log.d(javaClass.simpleName, "In bankCoin, number of banked coins $numBankedCoins")
 
-        if (numBankedCoins > 24) {
+        if (numBankedCoins > 24 && !coin.received) {
             val toast = Toast.makeText(activity, "Already banked 25 coins today!", Toast.LENGTH_SHORT)
             toast.show()
             return

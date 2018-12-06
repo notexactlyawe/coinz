@@ -94,8 +94,18 @@ class SendCoinzFragment : Fragment(), SendToFriendDialog.NoticeDialogListener {
                 toast.show()
             } else {
                 val coin = collectedCoins[copyOfIndex]
-                // collect with the coin's location to ensure we are nearby
-                it.collectCoinById(coin.coinId, coin.getLocation())
+
+                // get a copy of their coin
+                val theirCoin = it.getCoinById(coin.coinId)
+                if (theirCoin == null) {
+                    Log.e(javaClass.simpleName, "The retrieved coin was null")
+                    return@getCoinsObject
+                }
+
+                // update their coin
+                theirCoin.collect()
+                theirCoin.received = true
+
                 // WARNING: there are no locks around the db so we could have a race condition
                 updateUsersToCoinz(it)
 

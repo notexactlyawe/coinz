@@ -6,6 +6,7 @@ import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.NoSuchElementException
 
 // Convenience function to get the name of a Coins object
 fun getCoinsName(userId: String, date: String): String {
@@ -21,7 +22,8 @@ data class Coin(var coinId: String = "",
                 var currency: String = "",
                 var amount: Double = 0.0,
                 var collected: Boolean = false,
-                var banked: Boolean = false) {
+                var banked: Boolean = false,
+                var received: Boolean = false) {
 
     /**
      * Returns the location of the coin as a [Location]
@@ -72,10 +74,17 @@ data class Coins(var coins: List<Coin> = listOf(),
     val name = getCoinsName(userId, date)
 
     /**
-     * Returns the number of collected coins within the [coins] list
+     * Returns a [Coin] if it exists with a specified ID
+     *
+     * @param id The ID of the coin to find
+     * @return The [Coin] if it exists, or null
      */
-    fun getNumCollected(): Int {
-        return coins.filter { it.collected }.size
+    fun getCoinById(id: String): Coin? {
+        return try {
+            coins.first { it.coinId == id }
+        } catch (e: NoSuchElementException) {
+            null
+        }
     }
 
     /**
@@ -86,19 +95,19 @@ data class Coins(var coins: List<Coin> = listOf(),
      * @return Whether or not the coin was successfully collected
      */
     fun collectCoinById(id: String, userLocation: Location): Boolean {
-        try {
-            val coin = coins.first { it.coinId == id }
+        val coin = getCoinById(id)
 
-            if (!coin.isCollectable(userLocation)) {
-                Log.e(javaClass.simpleName, "Coin $id not collectable")
-                return false
-            }
-
-            coin.collect()
-        } catch (e: NoSuchElementException) {
-            Log.e(javaClass.simpleName, "No coin found for ID $id")
+        if (coin == null) {
+            Log.w(javaClass.simpleName, "No coin found for ID $id")
             return false
         }
+
+        if (!coin.isCollectable(userLocation)) {
+            Log.w(javaClass.simpleName, "Coin $id not collectable")
+            return false
+        }
+
+        coin.collect()
         return true
     }
 
