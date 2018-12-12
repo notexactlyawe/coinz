@@ -3,7 +3,6 @@ package com.cameronmacleod.coinz
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import java.text.SimpleDateFormat
 import java.util.*
 
 /**
@@ -34,7 +33,7 @@ fun updateUsersToCoinz(coins: Coins) {
 fun getCoinsObject(userId: String, date: Date, callback: (Coins?) -> Unit) {
     val db = FirebaseFirestore.getInstance()
 
-    val dateString = SimpleDateFormat("yyyy.MM.dd", Locale.UK).format(date)
+    val dateString = formatDate(date)
 
     val name = getCoinsName(userId, dateString)
 
@@ -104,12 +103,12 @@ fun getOrCreateBank(userID: String, email: String = "", callback: (Bank) -> Unit
     val db = FirebaseFirestore.getInstance()
     var bank = Bank(email = email, name = userID)
     db.collection("bank").document(userID).get()
-            .addOnCompleteListener { task ->
-                if (!task.isSuccessful || !task.result!!.exists()) {
+            .addOnSuccessListener { result ->
+                if (!result.exists()) {
                     updateBank(bank)
                 } else {
-                    Log.d("Firestore", "result: ${task.result}")
-                    bank = task.result?.toObject(Bank::class.java)!!
+                    Log.d("Firestore", "result: $result")
+                    bank = result.toObject(Bank::class.java)!!
                 }
                 callback(bank)
             }
@@ -131,14 +130,13 @@ fun getTopNBanks(limit: Long, callback: (List<Bank>?) -> Unit) {
     db.collection("bank")
             .orderBy("goldBalance", Query.Direction.DESCENDING)
             .limit(limit).get()
-            .addOnCompleteListener {
-                val banks = it.result?.toObjects(Bank::class.java)
-
-                if (banks == null) {
-                    Log.e("Firestore", "Couldn't get banks")
-                }
+            .addOnSuccessListener {
+                val banks = it.toObjects(Bank::class.java)
 
                 callback(banks)
+            }
+            .addOnFailureListener {
+                Log.e("Firestore", "Couldn't get banks $it")
             }
 }
 

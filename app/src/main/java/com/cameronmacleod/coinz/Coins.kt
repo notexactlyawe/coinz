@@ -4,7 +4,6 @@ import android.location.Location
 import android.util.Log
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.NoSuchElementException
 
@@ -63,6 +62,31 @@ data class Coin(var coinId: String = "",
         }
         return false
     }
+
+    /**
+     * Checks if object equal to another. Does a naive object comparison.
+     */
+    override fun equals(other: Any?): Boolean {
+        if (other !is Coin) {
+            return false
+        }
+
+        return (coinId == other.coinId &&
+                latitude == other.latitude &&
+                longitude == other.longitude &&
+                currency == other.currency &&
+                amount == other.amount &&
+                collected == other.collected &&
+                banked == other.banked &&
+                received == other.received)
+    }
+
+    /**
+     * Class should implement since implements equals
+     */
+    override fun hashCode(): Int {
+        return coinId.hashCode()
+    }
 }
 
 /**
@@ -118,6 +142,24 @@ data class Coins(var coins: List<Coin> = listOf(),
         return "${coins.size} coins. User: $userId, date: $date"
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (other !is Coins) {
+            return false
+        }
+
+        return (coins == other.coins &&
+                userId == other.userId &&
+                date == other.date)
+    }
+
+    /**
+     * Class should implement since it implements equals
+     */
+    override fun hashCode(): Int {
+        // It's OK if this wraps
+        return coins.hashCode() + userId.hashCode() + date.hashCode()
+    }
+
     /**
      * A factory companion object containing methods to allow constructing of [Coins] objects
      *
@@ -133,7 +175,7 @@ data class Coins(var coins: List<Coin> = listOf(),
          * @returns A [Coins] object
          */
         fun fromJson(json: String, userId: String, date: Date): Coins {
-            val dateString = SimpleDateFormat("yyyy.MM.dd", Locale.UK).format(date)
+            val dateString = formatDate(date)
             val features = FeatureCollection.fromJson(json).features()
             if (features == null) {
                 Log.e(this::class.java.simpleName, "No features in GeoJSON when creating list of coinz")
