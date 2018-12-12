@@ -4,7 +4,6 @@ import android.location.Location
 import android.util.Log
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.NoSuchElementException
 
@@ -43,25 +42,50 @@ data class Coin(var coinId: String = "",
     }
 
     /**
-     * Mark a coin as collected. Check [isCollectable] before using.
+     * Mark a coin as collected. Check [isCollectible] before using.
      */
     fun collect() {
         collected = true
     }
 
     /**
-     * Checks if a coin is collectable.
+     * Checks if a coin is collectible.
      *
      * Only true when the coin is not yet collected and the user is within 25 metres
      *
      * @param user The location of the user
-     * @return Whether the coin is collectable
+     * @return Whether the coin is collectible
      */
-    fun isCollectable(user: Location): Boolean {
+    fun isCollectible(user: Location): Boolean {
         if (!collected && getLocation().distanceTo(user) < 25) {
             return true
         }
         return false
+    }
+
+    /**
+     * Checks if object equal to another. Does a naive object comparison.
+     */
+    override fun equals(other: Any?): Boolean {
+        if (other !is Coin) {
+            return false
+        }
+
+        return (coinId == other.coinId &&
+                latitude == other.latitude &&
+                longitude == other.longitude &&
+                currency == other.currency &&
+                amount == other.amount &&
+                collected == other.collected &&
+                banked == other.banked &&
+                received == other.received)
+    }
+
+    /**
+     * Class should implement since implements equals
+     */
+    override fun hashCode(): Int {
+        return coinId.hashCode()
     }
 }
 
@@ -102,8 +126,8 @@ data class Coins(var coins: List<Coin> = listOf(),
             return false
         }
 
-        if (!coin.isCollectable(userLocation)) {
-            Log.w(javaClass.simpleName, "Coin $id not collectable")
+        if (!coin.isCollectible(userLocation)) {
+            Log.w(javaClass.simpleName, "Coin $id not collectible")
             return false
         }
 
@@ -116,6 +140,24 @@ data class Coins(var coins: List<Coin> = listOf(),
      */
     override fun toString(): String {
         return "${coins.size} coins. User: $userId, date: $date"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (other !is Coins) {
+            return false
+        }
+
+        return (coins == other.coins &&
+                userId == other.userId &&
+                date == other.date)
+    }
+
+    /**
+     * Class should implement since it implements equals
+     */
+    override fun hashCode(): Int {
+        // It's OK if this wraps
+        return coins.hashCode() + userId.hashCode() + date.hashCode()
     }
 
     /**
@@ -133,7 +175,7 @@ data class Coins(var coins: List<Coin> = listOf(),
          * @returns A [Coins] object
          */
         fun fromJson(json: String, userId: String, date: Date): Coins {
-            val dateString = SimpleDateFormat("yyyy.MM.dd", Locale.UK).format(date)
+            val dateString = formatDate(date)
             val features = FeatureCollection.fromJson(json).features()
             if (features == null) {
                 Log.e(this::class.java.simpleName, "No features in GeoJSON when creating list of coinz")

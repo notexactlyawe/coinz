@@ -231,8 +231,8 @@ class BlindModeAdapter(private var coins: List<Coin>,
         // set direction
         holder.view.findViewById<TextView>(R.id.coinDirection).text = getDirectionToCoin(coin, getLocation())
 
-        // set collectable
-        if (coin.isCollectable(getLocation()))
+        // set collectible
+        if (coin.isCollectible(getLocation()))
             holder.view.setBackgroundColor(ContextCompat.getColor(activity, R.color.colorPrimary))
         else
             holder.view.setBackgroundColor(Color.TRANSPARENT)

@@ -1,6 +1,8 @@
 package com.cameronmacleod.coinz
 
 import android.location.Location
+import java.text.SimpleDateFormat
+import java.util.*
 
 /**
  * Returns the distance between a coin and the user
@@ -32,4 +34,11 @@ fun getDirectionToCoin(coin: Coin, user: Location?): String {
         bearingDegrees < 337.5 -> "NW"
         else -> "N"
     }
+}
+
+/**
+ * Formats a date in the way that it's stored in Firebase
+ */
+fun formatDate(date: Date): String {
+    return SimpleDateFormat("yyyy.MM.dd", Locale.UK).format(date)
 }
