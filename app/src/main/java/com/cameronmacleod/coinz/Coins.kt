@@ -42,21 +42,21 @@ data class Coin(var coinId: String = "",
     }
 
     /**
-     * Mark a coin as collected. Check [isCollectable] before using.
+     * Mark a coin as collected. Check [isCollectible] before using.
      */
     fun collect() {
         collected = true
     }
 
     /**
-     * Checks if a coin is collectable.
+     * Checks if a coin is collectible.
      *
      * Only true when the coin is not yet collected and the user is within 25 metres
      *
      * @param user The location of the user
-     * @return Whether the coin is collectable
+     * @return Whether the coin is collectible
      */
-    fun isCollectable(user: Location): Boolean {
+    fun isCollectible(user: Location): Boolean {
         if (!collected && getLocation().distanceTo(user) < 25) {
             return true
         }
@@ -126,8 +126,8 @@ data class Coins(var coins: List<Coin> = listOf(),
             return false
         }
 
-        if (!coin.isCollectable(userLocation)) {
-            Log.w(javaClass.simpleName, "Coin $id not collectable")
+        if (!coin.isCollectible(userLocation)) {
+            Log.w(javaClass.simpleName, "Coin $id not collectible")
             return false
         }
 

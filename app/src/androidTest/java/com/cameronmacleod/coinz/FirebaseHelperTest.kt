@@ -3,6 +3,7 @@ package com.cameronmacleod.coinz
 import android.support.test.runner.AndroidJUnit4
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
+import org.junit.After
 
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -67,6 +68,20 @@ class FirebaseHelperTest {
         }
 
         Log.d(javaClass.simpleName, "Disabled network for Firebase")
+    }
+
+    @After
+    fun enableNetworkFirestore() {
+        var networkEnabled = false
+
+        fireStore.enableNetwork().addOnCompleteListener {
+            Log.d(javaClass.simpleName, "Enabled network for Firestore")
+            networkEnabled = true
+        }
+
+        while (!networkEnabled) {
+            Thread.sleep(50)
+        }
     }
 
     @Test
